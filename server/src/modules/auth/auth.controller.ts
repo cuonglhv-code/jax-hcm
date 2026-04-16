@@ -1,36 +1,71 @@
-import { Request, Response } from 'express';
-import { authService } from './auth.service';
-import { sendSuccess } from '../../utils/response';
-import { asyncHandler } from '../../utils/response';
+import type { Request, Response, NextFunction } from 'express'
+import * as svc from './auth.service'
+import { success } from '../../utils/responseEnvelope'
+import type { LoginInput, RefreshInput, ChangePasswordInput } from './auth.schemas'
+import { env } from '../../config/env'
 
-export const authController = {
-  login: asyncHandler(async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    const { tokens, user } = await authService.login(email, password);
-    sendSuccess(res, { ...tokens, user }, 200);
-  }),
+const isProd = env.NODE_ENV === 'production'
 
-  refresh: asyncHandler(async (req: Request, res: Response) => {
-    const { refreshToken } = req.body;
-    const tokens = await authService.refresh(refreshToken);
-    sendSuccess(res, tokens);
-  }),
+export async function login(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, password } = req.body as LoginInput
+    const { user, accessToken, refreshToken } = await svc.login(email, password)
 
-  logout: asyncHandler(async (req: Request, res: Response) => {
-    const { refreshToken } = req.body;
-    if (refreshToken) {
-      await authService.logout(refreshToken);
-    }
-    sendSuccess(res, { message: 'Logged out successfully' });
-  }),
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure:   isProd,
+      sameSite: 'lax',
+      path:     '/api/auth/refresh',
+      maxAge:   7 * 24 * 60 * 60 * 1000,
+    })
 
-  me: asyncHandler(async (req: Request, res: Response) => {
-    sendSuccess(res, req.user);
-  }),
+    res.json(success({ user, accessToken }))
+  } catch (err) { next(err) }
+}
 
-  changePassword: asyncHandler(async (req: Request, res: Response) => {
-    const { currentPassword, newPassword } = req.body;
-    await authService.changePassword(req.user!.id, currentPassword, newPassword);
-    sendSuccess(res, { message: 'Password changed successfully' });
-  }),
-};
+export async function logout(req: Request, res: Response, next: NextFunction) {
+  try {
+    const token = req.cookies.refreshToken || req.body.refreshToken
+    if (token) await svc.revokeRefreshToken(token)
+    res.clearCookie('refreshToken', { path: '/api/auth/refresh' })
+    res.json(success({ message: 'Logged out' }))
+  } catch (err) { next(err) }
+}
+
+export async function refresh(req: Request, res: Response, next: NextFunction) {
+  try {
+    const oldToken = req.cookies.refreshToken || (req.body as RefreshInput).refreshToken
+    const payload  = await svc.verifyRefreshToken(oldToken)
+    
+    const accessToken = svc.signAccessToken(payload)
+    const { raw, hash } = svc.signRefreshToken()
+    
+    await svc.revokeRefreshToken(oldToken)
+    await svc.storeRefreshToken(payload.userId, hash)
+
+    res.cookie('refreshToken', raw, {
+      httpOnly: true,
+      secure:   isProd,
+      sameSite: 'lax',
+      path:     '/api/auth/refresh',
+      maxAge:   7 * 24 * 60 * 60 * 1000,
+    })
+
+    res.json(success({ accessToken }))
+  } catch (err) { next(err) }
+}
+
+export async function me(req: Request, res: Response, next: NextFunction) {
+  try {
+    const user = await svc.getMe(req.user!.userId)
+    res.json(success(user))
+  } catch (err) { next(err) }
+}
+
+export async function changePassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { currentPassword, newPassword } = req.body as ChangePasswordInput
+    await svc.changePassword(req.user!.userId, currentPassword, newPassword)
+    res.json(success({ message: 'Password changed' }))
+  } catch (err) { next(err) }
+}

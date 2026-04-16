@@ -1,21 +1,16 @@
-import { Router } from 'express';
-import { authController } from './auth.controller';
-import { validate } from '../../middleware/validate';
-import { authenticate } from '../../middleware/authenticate';
-import { loginSchema, refreshTokenSchema, changePasswordSchema } from './auth.schemas';
+import { Router } from 'express'
+import { authRateLimiter }    from '../../middleware/rateLimiter'
+import { authenticate }       from '../../middleware/authenticate'
+import { validate }           from '../../middleware/validate'
+import { loginSchema, changePasswordSchema } from './auth.schemas'
+import * as ctrl              from './auth.controller'
 
-export const authRouter = Router();
+const router = Router()
 
-// Public routes
-authRouter.post('/login', validate(loginSchema), authController.login);
-authRouter.post('/refresh', validate(refreshTokenSchema), authController.refresh);
-authRouter.post('/logout', authController.logout);
+router.post('/login',           authRateLimiter, validate(loginSchema), ctrl.login)
+router.post('/logout',          ctrl.logout)
+router.post('/refresh',         authRateLimiter, ctrl.refresh)
+router.get('/me',               authenticate, ctrl.me)
+router.post('/change-password', authenticate, validate(changePasswordSchema), ctrl.changePassword)
 
-// Protected routes
-authRouter.get('/me', authenticate, authController.me);
-authRouter.put(
-  '/change-password',
-  authenticate,
-  validate(changePasswordSchema),
-  authController.changePassword,
-);
+export default router

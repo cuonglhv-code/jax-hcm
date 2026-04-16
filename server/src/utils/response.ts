@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse, PaginationMeta } from '@hcm/shared';
+import { ApiResponse, PaginationMeta } from './responseEnvelope';
 
 /**
  * Standardised success response
@@ -19,7 +19,7 @@ export function sendSuccess<T>(
  * Standardised error response
  */
 export function sendError(res: Response, message: string, statusCode = 500): void {
-  const response: ApiResponse = { success: false, data: null, error: message };
+  const response: ApiResponse = { success: false, error: message };
   res.status(statusCode).json(response);
 }
 

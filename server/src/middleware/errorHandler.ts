@@ -1,68 +1,48 @@
-import { Request, Response, NextFunction } from 'express';
-import { logger } from '../config/logger';
-import { sendError } from '../utils/response';
+import type { Request, Response, NextFunction } from 'express'
+import { ZodError } from 'zod'
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
+import { error as envelope } from '../utils/responseEnvelope'
 
 export class AppError extends Error {
-  constructor(
-    public message: string,
-    public statusCode: number = 500,
-    public isOperational = true,
-  ) {
-    super(message);
-    this.name = 'AppError';
-    Error.captureStackTrace(this, this.constructor);
+  constructor(public statusCode: number, message: string) {
+    super(message)
+    this.name = 'AppError'
   }
 }
 
-export class NotFoundError extends AppError {
-  constructor(resource = 'Resource') {
-    super(`${resource} not found`, 404);
-    this.name = 'NotFoundError';
+export function errorHandler(
+  err: Error, _req: Request, res: Response, _next: NextFunction
+): void {
+  if (err instanceof ZodError) {
+    res.status(400).json({
+      success: false,
+      error: 'Validation failed',
+      fields: err.errors.map(e => ({
+        path: e.path.join('.'),
+        message: e.message,
+      })),
+    })
+    return
   }
-}
 
-export class ForbiddenError extends AppError {
-  constructor(message = 'Insufficient permissions') {
-    super(message, 403);
-    this.name = 'ForbiddenError';
+  if (err instanceof TokenExpiredError) {
+    res.status(401).json(envelope('Token expired'))
+    return
   }
-}
 
-export class UnauthorizedError extends AppError {
-  constructor(message = 'Unauthorized') {
-    super(message, 401);
-    this.name = 'UnauthorizedError';
+  if (err instanceof JsonWebTokenError) {
+    res.status(401).json(envelope('Invalid token'))
+    return
   }
-}
 
-export class ConflictError extends AppError {
-  constructor(message: string) {
-    super(message, 409);
-    this.name = 'ConflictError';
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction): void {
   if (err instanceof AppError) {
-    if (err.statusCode >= 500) {
-      logger.error('Application error', { error: err.message, stack: err.stack });
-    }
-    sendError(res, err.message, err.statusCode);
-    return;
+    res.status(err.statusCode).json(envelope(err.message))
+    return
   }
 
-  // Handle Knex/PostgreSQL constraint errors
-  const pgError = err as { code?: string; detail?: string };
-  if (pgError.code === '23505') {
-    sendError(res, `Duplicate entry: ${pgError.detail ?? 'record already exists'}`, 409);
-    return;
-  }
-  if (pgError.code === '23503') {
-    sendError(res, 'Referenced record not found', 404);
-    return;
-  }
-
-  logger.error('Unhandled error', { error: err.message, stack: err.stack });
-  sendError(res, 'Internal server error', 500);
+  const isDev = process.env.NODE_ENV === 'development'
+  console.error('[Unhandled Error]', err)
+  res.status(500).json(
+    envelope(isDev ? err.message : 'Internal server error')
+  )
 }

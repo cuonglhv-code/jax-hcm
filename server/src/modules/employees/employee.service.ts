@@ -1,7 +1,7 @@
 import db from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
-import { NotFoundError, ConflictError } from '../../middleware/errorHandler';
-import { getPagination, buildPaginationMeta } from '../../utils/pagination';
+import { AppError } from '../../middleware/errorHandler';
+import { getPagination, buildMeta } from '../../utils/pagination';
 import { Request } from 'express';
 import { AuthUser } from '@hcm/shared';
 
@@ -44,7 +44,7 @@ export const employeeService = {
     const [{ count }] = await query.clone().count('employees.id as count');
     const data = await query.orderBy('employees.last_name').limit(limit).offset(offset);
 
-    return { data, meta: buildPaginationMeta(Number(count), page, limit) };
+    return { data, meta: buildMeta(Number(count), page, limit) };
   },
 
   async getById(id: string) {
@@ -65,14 +65,14 @@ export const employeeService = {
       )
       .first();
 
-    if (!employee) throw new NotFoundError('Employee');
+    if (!employee) throw new AppError(404, 'Employee not found');
     return employee;
   },
 
   async create(data: Record<string, unknown>, user: AuthUser) {
     // Check email uniqueness
     const existing = await db('employees').where({ email: data.email }).whereNull('deleted_at').first();
-    if (existing) throw new ConflictError(`Employee with email ${data.email} already exists`);
+    if (existing) throw new AppError(409, `Employee with email ${data.email} already exists`);
 
     const id = uuidv4();
     const employeeNumber = generateEmployeeNumber();
@@ -216,7 +216,7 @@ export const employeeService = {
 
     const [{ count }] = await query.clone().count('audit_logs.id as count');
     const data = await query.orderBy('audit_logs.created_at', 'desc').limit(limit).offset(offset);
-    return { data, meta: buildPaginationMeta(Number(count), page, limit) };
+    return { data, meta: buildMeta(Number(count), page, limit) };
   },
 
   async createAuditLog(params: {

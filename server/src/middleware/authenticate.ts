@@ -1,30 +1,34 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env';
-import { UnauthorizedError } from './errorHandler';
-import { AuthUser } from '@hcm/shared';
+import type { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
+import type { JwtPayload } from '@hcm/shared'
+import { AppError } from './errorHandler'
 
-// Extend Express Request to include authenticated user
 declare global {
   namespace Express {
     interface Request {
-      user?: AuthUser;
+      user?: JwtPayload
     }
   }
 }
 
 export function authenticate(req: Request, _res: Response, next: NextFunction): void {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new UnauthorizedError('No token provided');
+  const header = req.headers.authorization
+  if (!header?.startsWith('Bearer ')) {
+    return next(new AppError(401, 'No token provided'))
   }
 
-  const token = authHeader.slice(7);
+  const token  = header.slice(7)
+  const secret = process.env.JWT_SECRET
+
+  if (!secret || secret === 'CHANGE_ME_IN_PRODUCTION_USE_32_CHAR_MIN') {
+    return next(new AppError(500, 'JWT_SECRET is not configured'))
+  }
+
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as AuthUser;
-    req.user = decoded;
-    next();
-  } catch {
-    throw new UnauthorizedError('Invalid or expired token');
+    const payload = jwt.verify(token, secret) as JwtPayload
+    req.user = payload
+    next()
+  } catch (err) {
+    next(err)
   }
 }

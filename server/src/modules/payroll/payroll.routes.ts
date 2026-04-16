@@ -45,8 +45,8 @@ payrollRouter.get('/employees/:id/salary', authorize('hr_manager', 'super_admin'
 payrollRouter.post('/employees/:id/salary', authorize('hr_manager', 'super_admin'),
   validate(setSalarySchema),
   asyncHandler(async (req, res) => {
-    const data = await payrollService.setSalary(req.params.id, req.body, req.user!);
-    sendSuccess(res, data, 201);
+    const record = await payrollService.setSalary(req.params.id, req.body, req.user as unknown as import('@hcm/shared').AuthUser);
+    sendSuccess(res, record, 201);
   }),
 );
 
@@ -97,16 +97,17 @@ payrollRouter.get('/runs', authorize('hr_manager', 'super_admin'),
 payrollRouter.post('/runs', authorize('hr_manager', 'super_admin'),
   validate(createRunSchema),
   asyncHandler(async (req, res) => {
-    const data = await payrollService.createRun(req.body, req.user!);
-    sendSuccess(res, data, 201);
+    const record = await payrollService.createRun(req.body, req.user as unknown as import('@hcm/shared').AuthUser);
+    sendSuccess(res, record, 201);
   }),
 );
 
 payrollRouter.put('/runs/:id/status', authorize('hr_manager', 'super_admin'),
   validate(statusSchema),
   asyncHandler(async (req, res) => {
-    const data = await payrollService.advanceRunStatus(req.params.id, req.body.status, req.user!);
-    sendSuccess(res, data);
+    const data = req.body;
+    const run = await payrollService.advanceRunStatus(req.params.id, data.status, req.user as unknown as import('@hcm/shared').AuthUser);
+    sendSuccess(res, run);
   }),
 );
 

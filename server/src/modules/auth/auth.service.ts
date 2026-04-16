@@ -1,132 +1,114 @@
-import db from '../../config/database';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { env } from '../../config/env';
-import { AuthUser } from '@hcm/shared';
-import { UnauthorizedError, NotFoundError } from '../../middleware/errorHandler';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { db } from '../../config/database'
+import { env } from '../../config/env'
+import { AppError } from '../../middleware/errorHandler'
+import type { JwtPayload, AuthUser, Role } from '@hcm/shared'
 
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
+export function signAccessToken(payload: JwtPayload): string {
+  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN as any })
 }
 
-export const authService = {
-  async login(email: string, password: string): Promise<{ tokens: TokenPair; user: AuthUser }> {
-    const user = await db('users')
-      .join('employees', 'users.employee_id', 'employees.id')
-      .where('users.email', email.toLowerCase())
-      .whereNull('users.deleted_at')
-      .select(
-        'users.id',
-        'users.email',
-        'users.password_hash',
-        'users.role',
-        'users.employee_id',
-        'employees.first_name',
-        'employees.last_name',
-      )
-      .first();
+export function signRefreshToken(): { raw: string; hash: string } {
+  const raw = crypto.randomBytes(32).toString('hex')
+  const hash = crypto.createHash('sha256').update(raw).digest('hex')
+  return { raw, hash }
+}
 
-    if (!user) throw new UnauthorizedError('Invalid email or password');
+export async function storeRefreshToken(userId: string, hash: string): Promise<void> {
+  await db('refresh_tokens')
+    .update({ revoked_at: db.fn.now() })
+    .where({ user_id: userId })
+    .andWhere('expires_at', '>', db.fn.now())
+    .andWhere({ revoked_at: null })
 
-    const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) throw new UnauthorizedError('Invalid email or password');
+  await db('refresh_tokens').insert({
+    user_id: userId,
+    token_hash: hash,
+    expires_at: db.raw("NOW() + INTERVAL '7 days'"),
+  })
+}
 
-    const authUser: AuthUser = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      employeeId: user.employee_id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-    };
+export async function verifyRefreshToken(raw: string): Promise<JwtPayload> {
+  const hash = crypto.createHash('sha256').update(raw).digest('hex')
 
-    const tokens = authService.generateTokens(authUser);
+  const stored = await db('refresh_tokens')
+    .select('users.id', 'users.email', 'users.role')
+    .join('users', 'users.id', 'refresh_tokens.user_id')
+    .where({ token_hash: hash })
+    .andWhere('refresh_tokens.expires_at', '>', db.fn.now())
+    .andWhere({ 'refresh_tokens.revoked_at': null })
+    .first()
 
-    // Store refresh token
-    await db('refresh_tokens').insert({
-      id: uuidv4(),
-      user_id: user.id,
-      token: tokens.refreshToken,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+  if (!stored) {
+    throw new AppError(401, 'Invalid or expired refresh token')
+  }
 
-    return { tokens, user: authUser };
-  },
+  return { userId: stored.id, email: stored.email, role: stored.role as Role }
+}
 
-  generateTokens(user: AuthUser): TokenPair {
-    const accessToken = jwt.sign(user, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'],
-    });
-    const refreshToken = jwt.sign({ id: user.id }, env.JWT_SECRET, {
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN as jwt.SignOptions['expiresIn'],
-    });
-    return { accessToken, refreshToken };
-  },
+export async function revokeRefreshToken(raw: string): Promise<void> {
+  const hash = crypto.createHash('sha256').update(raw).digest('hex')
+  await db('refresh_tokens').update({ revoked_at: db.fn.now() }).where({ token_hash: hash })
+}
 
-  async refresh(refreshToken: string): Promise<TokenPair> {
-    const stored = await db('refresh_tokens')
-      .where({ token: refreshToken })
-      .where('expires_at', '>', new Date())
-      .whereNull('revoked_at')
-      .first();
+export async function login(email: string, pass: string): Promise<{ user: AuthUser; accessToken: string; refreshToken: string }> {
+  const user = await db('users')
+    .select('users.*', 'employees.first_name', 'employees.last_name', 'employees.id as employee_id')
+    .leftJoin('employees', 'employees.user_id', 'users.id')
+    .where({ 'users.email': email.toLowerCase(), 'users.is_active': true, 'users.deleted_at': null })
+    .first()
 
-    if (!stored) throw new UnauthorizedError('Invalid or expired refresh token');
+  if (!user || !(await bcrypt.compare(pass, user.password_hash))) {
+    throw new AppError(401, 'Invalid credentials')
+  }
 
-    const decoded = jwt.verify(refreshToken, env.JWT_SECRET) as { id: string };
+  await db('users').update({ last_login_at: db.fn.now() }).where({ id: user.id })
 
-    const user = await db('users')
-      .join('employees', 'users.employee_id', 'employees.id')
-      .where('users.id', decoded.id)
-      .whereNull('users.deleted_at')
-      .select(
-        'users.id',
-        'users.email',
-        'users.role',
-        'users.employee_id',
-        'employees.first_name',
-        'employees.last_name',
-      )
-      .first();
+  const payload: JwtPayload = { userId: user.id, email: user.email, role: user.role as Role }
+  const accessToken = signAccessToken(payload)
+  const { raw, hash } = signRefreshToken()
+  await storeRefreshToken(user.id, hash)
 
-    if (!user) throw new NotFoundError('User');
+  const authUser: AuthUser = {
+    id: user.id,
+    email: user.email,
+    role: user.role as Role,
+    firstName: user.first_name ?? 'User',
+    lastName: user.last_name ?? '',
+    employeeId: user.employee_id,
+  }
 
-    const authUser: AuthUser = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      employeeId: user.employee_id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-    };
+  return { user: authUser, accessToken, refreshToken: raw }
+}
 
-    // Revoke old token and issue new pair
-    await db('refresh_tokens').where({ token: refreshToken }).update({ revoked_at: new Date() });
+export async function getMe(userId: string): Promise<AuthUser> {
+  const user = await db('users')
+    .select('users.id', 'users.email', 'users.role', 'employees.first_name', 'employees.last_name', 'employees.id as employee_id')
+    .leftJoin('employees', 'employees.user_id', 'users.id')
+    .where({ 'users.id': userId })
+    .first()
 
-    const tokens = authService.generateTokens(authUser);
-    await db('refresh_tokens').insert({
-      id: uuidv4(),
-      user_id: user.id,
-      token: tokens.refreshToken,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+  if (!user) throw new AppError(404, 'User not found')
 
-    return tokens;
-  },
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role as Role,
+    firstName: user.first_name ?? 'User',
+    lastName: user.last_name ?? '',
+    employeeId: user.employee_id,
+  }
+}
 
-  async logout(refreshToken: string): Promise<void> {
-    await db('refresh_tokens').where({ token: refreshToken }).update({ revoked_at: new Date() });
-  },
+export async function changePassword(userId: string, current: string, next: string): Promise<void> {
+  const user = await db('users').where({ id: userId }).first()
+  if (!user || !(await bcrypt.compare(current, user.password_hash))) {
+    throw new AppError(400, 'Current password is incorrect')
+  }
 
-  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
-    const user = await db('users').where({ id: userId }).first();
-    if (!user) throw new NotFoundError('User');
-
-    const valid = await bcrypt.compare(currentPassword, user.password_hash);
-    if (!valid) throw new UnauthorizedError('Current password is incorrect');
-
-    const hash = await bcrypt.hash(newPassword, env.BCRYPT_ROUNDS);
-    await db('users').where({ id: userId }).update({ password_hash: hash, updated_at: new Date() });
-  },
-};
+  const hash = await bcrypt.hash(next, env.BCRYPT_ROUNDS)
+  await db('users').update({ password_hash: hash, updated_at: db.fn.now() }).where({ id: userId })
+  await db('refresh_tokens').update({ revoked_at: db.fn.now() }).where({ user_id: userId })
+}

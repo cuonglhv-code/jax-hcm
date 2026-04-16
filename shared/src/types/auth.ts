@@ -2,6 +2,7 @@ import type { Role } from '../constants/roles'
 
 export interface JwtPayload {
   userId: string
+  employeeId?: string
   email: string
   role: Role
   iat?: number
@@ -10,6 +11,7 @@ export interface JwtPayload {
 
 export interface AuthUser {
   id: string
+  employeeId?: string
   email: string
   role: Role
   firstName: string

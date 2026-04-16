@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { employeeController } from './employee.controller';
 import { authenticate } from '../../middleware/authenticate';
 import { authorize } from '../../middleware/authorize';
-import { validate, validateQuery } from '../../middleware/validate';
+import { validate } from '../../middleware/validate';
 import {
   createEmployeeSchema,
   updateEmployeeSchema,
@@ -36,7 +36,7 @@ employeeRouter.get('/job-titles', employeeController.getJobTitles);
 employeeRouter.get('/org-chart', employeeController.orgChart);
 
 // Employee CRUD
-employeeRouter.get('/', validateQuery(employeeQuerySchema), employeeController.list);
+employeeRouter.get('/', validate(employeeQuerySchema, 'query'), employeeController.list);
 employeeRouter.post(
   '/',
   authorize('hr_manager', 'super_admin'),

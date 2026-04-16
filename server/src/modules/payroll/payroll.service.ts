@@ -1,7 +1,7 @@
 import db from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
-import { NotFoundError, ForbiddenError } from '../../middleware/errorHandler';
-import { getPagination, buildPaginationMeta } from '../../utils/pagination';
+import { AppError } from '../../middleware/errorHandler';
+import { getPagination, buildMeta } from '../../utils/pagination';
 import { Request } from 'express';
 import { AuthUser } from '@hcm/shared';
 
@@ -79,7 +79,7 @@ export const payrollService = {
 
     const [{ count }] = await query.clone().count('compensation_history.id as count');
     const data = await query.orderBy('effective_date', 'desc').limit(limit).offset(offset);
-    return { data, meta: buildPaginationMeta(Number(count), page, limit) };
+    return { data, meta: buildMeta(Number(count), page, limit) };
   },
 
   async getAllowances(employeeId: string) {
@@ -123,7 +123,7 @@ export const payrollService = {
 
     const [{ count }] = await query.clone().count('payroll_runs.id as count');
     const data = await query.orderBy('created_at', 'desc').limit(limit).offset(offset);
-    return { data, meta: buildPaginationMeta(Number(count), page, limit) };
+    return { data, meta: buildMeta(Number(count), page, limit) };
   },
 
   async createRun(data: Record<string, unknown>, user: AuthUser) {
@@ -205,7 +205,7 @@ export const payrollService = {
 
   async advanceRunStatus(runId: string, newStatus: string, user: AuthUser) {
     const run = await db('payroll_runs').where({ id: runId }).first();
-    if (!run) throw new NotFoundError('Payroll run');
+    if (!run) throw new AppError(404, 'Payroll record not found');
 
     const allowed: Record<string, string[]> = {
       draft: ['reviewed'],
@@ -213,7 +213,7 @@ export const payrollService = {
       approved: ['paid'],
     };
     if (!allowed[run.status]?.includes(newStatus)) {
-      throw new ForbiddenError(`Cannot transition from ${run.status} to ${newStatus}`);
+      throw new AppError(400, `Cannot transition from ${run.status} to ${newStatus}`);
     }
 
     const updates: Record<string, unknown> = { status: newStatus, updated_at: new Date() };
@@ -231,7 +231,7 @@ export const payrollService = {
       .join('payroll_runs', 'payslips.payroll_run_id', 'payroll_runs.id')
       .select('payslips.*', 'employees.first_name', 'employees.last_name', 'employees.employee_number', 'payroll_runs.period_start', 'payroll_runs.period_end', 'payroll_runs.name as run_name')
       .first();
-    if (!payslip) throw new NotFoundError('Payslip');
+    if (!payslip) throw new AppError(404, 'Payslip not found');
     return payslip;
   },
 
@@ -244,6 +244,6 @@ export const payrollService = {
 
     const [{ count }] = await query.clone().count('payslips.id as count');
     const data = await query.orderBy('payroll_runs.period_start', 'desc').limit(limit).offset(offset);
-    return { data, meta: buildPaginationMeta(Number(count), page, limit) };
+    return { data, meta: buildMeta(Number(count), page, limit) };
   },
 };

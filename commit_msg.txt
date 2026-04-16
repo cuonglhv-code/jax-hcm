@@ -1,0 +1,15 @@
+feat: Phase 4 complete — all 6 API modules implemented
+
+Employees: CRUD, org tree, documents, audit log
+Payroll: salary history, allowances/deductions, tax rules,
+         run lifecycle (draft→reviewed→approved→paid), payslips
+Recruitment: requisitions, candidate pipeline, interviews,
+             offer letters, onboarding checklists, convert to employee
+Performance: appraisal cycles, self/manager assessments,
+             OKR goals + key results with auto % recalculation,
+             department dashboard
+Leave: leave types, entitlements, balance tracking, overlap guard,
+       request workflow, team calendar, public holidays,
+       clock-in/clock-out, CSV export
+Learning: course catalogue, enrolments, certificate generation,
+          learning plans, mandatory training expiry tracking

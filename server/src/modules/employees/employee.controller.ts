@@ -16,17 +16,17 @@ export const employeeController = {
   }),
 
   create: asyncHandler(async (req: Request, res: Response) => {
-    const employee = await employeeService.create(req.body, req.user!);
+    const employee = await employeeService.create(req.body, req.user as unknown as import('@hcm/shared').AuthUser);
     sendSuccess(res, employee, 201);
   }),
 
   update: asyncHandler(async (req: Request, res: Response) => {
-    const employee = await employeeService.update(req.params.id, req.body, req.user!);
+    const employee = await employeeService.update(req.params.id, req.body, req.user as unknown as import('@hcm/shared').AuthUser);
     sendSuccess(res, employee);
   }),
 
   delete: asyncHandler(async (req: Request, res: Response) => {
-    await employeeService.softDelete(req.params.id, req.user!);
+    await employeeService.softDelete(req.params.id, req.user as unknown as import('@hcm/shared').AuthUser);
     sendSuccess(res, { message: 'Employee deleted' });
   }),
 
@@ -62,7 +62,7 @@ export const employeeController = {
         size: file.size,
         mimeType: file.mimetype,
       },
-      req.user!,
+      req.user as unknown as import('@hcm/shared').AuthUser,
     );
     sendSuccess(res, doc, 201);
   }),

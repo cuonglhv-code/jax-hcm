@@ -41,60 +41,60 @@
 
 ## PHASE 3 — Auth System & Core Middleware
 
-- [ ] **PHASE-3-01** Scaffold `server/src/utils/responseEnvelope.ts` — `{ success, data, meta }` standard response shape
-- [ ] **PHASE-3-02** Build `server/src/utils/pagination.ts` — parse `page`/`limit` from query string, build meta
-- [ ] **PHASE-3-03** Formulate `server/src/utils/fileStorage.ts` — abstraction layer with local `fs` implementation; S3 stub
-- [ ] **PHASE-3-04** Deploy `server/src/middleware/errorHandler.ts` — ZodError → 400, JWT error → 401, default → 500
-- [ ] **PHASE-3-05** Deploy `server/src/middleware/authenticate.ts` — verify JWT, attach `req.user`
-- [ ] **PHASE-3-06** Deploy `server/src/middleware/authorize.ts` — variadic role args against `ROLES` constants
-- [ ] **PHASE-3-14** Bind auth routes into `server/src/app.ts` — mount under `/api/auth`
-- [ ] **PHASE-3-07** Deploy `server/src/middleware/validate.ts` — Zod schema wrapper, field-level 400 errors
-- [ ] **PHASE-3-08** Deploy `server/src/middleware/paginate.ts` — enforce hard limit (max 100) on GET list queries
-- [ ] **PHASE-3-09** Deploy `server/src/middleware/rateLimiter.ts` — 10 req / 15 min / IP on `/api/auth` surfaces
-- [ ] **PHASE-3-10** Implement `auth.schemas.ts` — Zod schemas for login, register, refresh, password-change
-- [ ] **PHASE-3-11** Construct `auth.service.ts` — bcrypt compare, JWT sign/verify, refresh token DB logic
-- [ ] **PHASE-3-12** Setup `auth.controller.ts` — login, logout, refresh, me endpoints
-- [ ] **PHASE-3-13** Wire `auth.routes.ts` — Express router verbs to controller actions
+- [x] **PHASE-3-01** Scaffold `server/src/utils/responseEnvelope.ts` — `{ success, data, meta }` standard response shape
+- [x] **PHASE-3-02** Build `server/src/utils/pagination.ts` — parse `page`/`limit` from query string, build meta
+- [x] **PHASE-3-03** Formulate `server/src/utils/fileStorage.ts` — abstraction layer with local `fs` implementation; S3 stub
+- [x] **PHASE-3-04** Deploy `server/src/middleware/errorHandler.ts` — ZodError → 400, JWT error → 401, default → 500
+- [x] **PHASE-3-05** Deploy `server/src/middleware/authenticate.ts` — verify JWT, attach `req.user`
+- [x] **PHASE-3-06** Deploy `server/src/middleware/authorize.ts` — variadic role args against `ROLES` constants
+- [x] **PHASE-3-14** Bind auth routes into `server/src/app.ts` — mount under `/api/auth`
+- [x] **PHASE-3-07** Deploy `server/src/middleware/validate.ts` — Zod schema wrapper, field-level 400 errors
+- [x] **PHASE-3-08** Deploy `server/src/middleware/paginate.ts` — enforce hard limit (max 100) on GET list queries
+- [x] **PHASE-3-09** Deploy `server/src/middleware/rateLimiter.ts` — 10 req / 15 min / IP on `/api/auth` surfaces
+- [x] **PHASE-3-10** Implement `auth.schemas.ts` — Zod schemas for login, register, refresh, password-change
+- [x] **PHASE-3-11** Construct `auth.service.ts` — bcrypt compare, JWT sign/verify, refresh token DB logic
+- [x] **PHASE-3-12** Setup `auth.controller.ts` — login, logout, refresh, me endpoints
+- [x] **PHASE-3-13** Wire `auth.routes.ts` — Express router verbs to controller actions
 
 ***
 
 ## PHASE 4 — Full API Route Inventory
 
 ### Employees
-- [ ] **PHASE-4-01** Compose `employee.schemas.ts` — create/update Zod schemas including employment type enum
-- [ ] **PHASE-4-02** Build `employee.service.ts` — CRUD, org tree builder, document upload, audit log writer
-- [ ] **PHASE-4-03** Assemble `employee.controller.ts` — paginated list, profile, org chart, audit log endpoints
-- [ ] **PHASE-4-04** Connect `employee.routes.ts` — `/employees`, `/employees/:id`, `/employees/:id/documents`, `/org-chart`, `/audit-log`
+- [x] **PHASE-4-01** Compose `employee.schemas.ts` — create/update Zod schemas including employment type enum
+- [x] **PHASE-4-02** Build `employee.service.ts` — CRUD, org tree builder, document upload, audit log writer
+- [x] **PHASE-4-03** Assemble `employee.controller.ts` — paginated list, profile, org chart, audit log endpoints
+- [x] **PHASE-4-04** Connect `employee.routes.ts` — `/employees`, `/employees/:id`, `/employees/:id/documents`, `/org-chart`, `/audit-log`
 
 ### Payroll
-- [ ] **PHASE-4-05** Compose `payroll.schemas.ts` — salary record, allowance, deduction, payroll run schemas
-- [ ] **PHASE-4-06** Build `payroll.service.ts` — lifecycle state machine (draft→reviewed→approved→paid), payslip generation, tax rule application
-- [ ] **PHASE-4-07** Assemble `payroll.controller.ts` — run management, payslip fetch, compensation history
-- [ ] **PHASE-4-08** Connect `payroll.routes.ts` — `/payroll/runs`, `/payroll/runs/:id/advance`, `/payroll/salary/:employeeId`, `/payroll/payslips/:id`
+- [x] **PHASE-4-05** Compose `payroll.schemas.ts` — salary record, allowance, deduction, payroll run schemas
+- [x] **PHASE-4-06** Build `payroll.service.ts` — lifecycle state machine (draft→reviewed→approved→paid), payslip generation, tax rule application
+- [x] **PHASE-4-07** Assemble `payroll.controller.ts` — run management, payslip fetch, compensation history
+- [x] **PHASE-4-08** Connect `payroll.routes.ts` — `/payroll/runs`, `/payroll/runs/:id/advance`, `/payroll/salary/:employeeId`, `/payroll/payslips/:id`
 
 ### Recruitment
-- [ ] **PHASE-4-09** Compose `recruitment.schemas.ts` — requisition, candidate, application stage transition schemas
-- [ ] **PHASE-4-10** Build `recruitment.service.ts` — pipeline stage transitions, candidate→employee conversion, onboarding checklist generation
-- [ ] **PHASE-4-11** Assemble `recruitment.controller.ts` — requisition CRUD, candidate pipeline, interview logging, offer letter
-- [ ] **PHASE-4-12** Connect `recruitment.routes.ts` — `/recruitment/requisitions`, `/recruitment/candidates`, `/recruitment/candidates/:id/convert`, `/recruitment/onboarding`
+- [x] **PHASE-4-09** Compose `recruitment.schemas.ts` — requisition, candidate, application stage transition schemas
+- [x] **PHASE-4-10** Build `recruitment.service.ts` — pipeline stage transitions, candidate→employee conversion, onboarding checklist generation
+- [x] **PHASE-4-11** Assemble `recruitment.controller.ts` — requisition CRUD, candidate pipeline, interview logging, offer letter
+- [x] **PHASE-4-12** Connect `recruitment.routes.ts` — `/recruitment/requisitions`, `/recruitment/candidates`, `/recruitment/candidates/:id/convert`, `/recruitment/onboarding`
 
 ### Performance
-- [ ] **PHASE-4-13** Compose `performance.schemas.ts` — cycle, appraisal form, goal, key result schemas
-- [ ] **PHASE-4-14** Build `performance.service.ts` — appraisal workflow, goal % recalculation in service layer (Knex transaction), department aggregations
-- [ ] **PHASE-4-15** Assemble `performance.controller.ts` — cycle management, self/manager assessment, OKR CRUD, department dashboard data
-- [ ] **PHASE-4-16** Connect `performance.routes.ts` — `/performance/cycles`, `/performance/appraisals`, `/performance/goals`, `/performance/dashboard`
+- [x] **PHASE-4-13** Compose `performance.schemas.ts` — cycle, appraisal form, goal, key result schemas
+- [x] **PHASE-4-14** Build `performance.service.ts` — appraisal workflow, goal % recalculation in service layer (Knex transaction), department aggregations
+- [x] **PHASE-4-15** Assemble `performance.controller.ts` — cycle management, self/manager assessment, OKR CRUD, department dashboard data
+- [x] **PHASE-4-16** Connect `performance.routes.ts` — `/performance/cycles`, `/performance/appraisals`, `/performance/goals`, `/performance/dashboard`
 
 ### Leave
-- [ ] **PHASE-4-17** Compose `leave.schemas.ts` — leave type, request (with date overlap validation), entitlement schemas
-- [ ] **PHASE-4-18** Build `leave.service.ts` — balance tracking (Knex transaction), accrual logic, overlap detection, clock-in/out
-- [ ] **PHASE-4-19** Assemble `leave.controller.ts` — request workflow, team calendar, balance overview, attendance log + CSV export
-- [ ] **PHASE-4-20** Connect `leave.routes.ts` — `/leave/requests`, `/leave/balance`, `/leave/calendar`, `/leave/attendance`, `/leave/attendance/export`
+- [x] **PHASE-4-17** Compose `leave.schemas.ts` — leave type, request (with date overlap validation), entitlement schemas
+- [x] **PHASE-4-18** Build `leave.service.ts` — balance tracking (Knex transaction), accrual logic, overlap detection, clock-in/out
+- [x] **PHASE-4-19** Assemble `leave.controller.ts` — request workflow, team calendar, balance overview, attendance log + CSV export
+- [x] **PHASE-4-20** Connect `leave.routes.ts` — `/leave/requests`, `/leave/balance`, `/leave/calendar`, `/leave/attendance`, `/leave/attendance/export`
 
 ### Learning
-- [ ] **PHASE-4-21** Compose `learning.schemas.ts` — course, enrolment, learning plan, mandatory training schemas
-- [ ] **PHASE-4-22** Build `learning.service.ts` — enrolment status progression, mandatory training expiry alerts, certificate number generation
-- [ ] **PHASE-4-23** Assemble `learning.controller.ts` — catalogue CRUD, enrolment management, learning plan builder, certificate generation trigger
-- [ ] **PHASE-4-24** Connect `learning.routes.ts` — `/learning/courses`, `/learning/enrolments`, `/learning/plans`, `/learning/mandatory`, `/learning/certificates/:id`
+- [x] **PHASE-4-21** Compose `learning.schemas.ts` — course, enrolment, learning plan, mandatory training schemas
+- [x] **PHASE-4-22** Build `learning.service.ts` — enrolment status progression, mandatory training expiry alerts, certificate number generation
+- [x] **PHASE-4-23** Assemble `learning.controller.ts` — catalogue CRUD, enrolment management, learning plan builder, certificate generation trigger
+- [x] **PHASE-4-24** Connect `learning.routes.ts` — `/learning/courses`, `/learning/enrolments`, `/learning/plans`, `/learning/mandatory`, `/learning/certificates/:id`
 
 ***
 
@@ -240,4 +240,4 @@
 
 ***
 
-*Last updated: Phase 0 (plan review) complete. Ready to execute Phase 1.*
+*Last updated: Phase 4 (backend) complete. Ready to execute Phase 5 (frontend).*

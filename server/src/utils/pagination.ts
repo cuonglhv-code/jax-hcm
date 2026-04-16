@@ -1,28 +1,23 @@
-import { Request } from 'express';
-import { PaginationMeta } from '@hcm/shared';
+import type { Request } from 'express'
 
-export interface PaginatedQuery {
-  page: number;
-  limit: number;
-  offset: number;
+export interface PaginationParams {
+  page: number
+  limit: number
+  offset: number
 }
 
-export function getPagination(req: Request): PaginatedQuery {
-  const page = Math.max(1, parseInt(req.query.page as string) || 1);
-  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
-  const offset = (page - 1) * limit;
-  return { page, limit, offset };
+export function getPagination(reqOrQuery: any): PaginationParams {
+  const query = reqOrQuery.query || reqOrQuery;
+  const page  = Math.max(1, parseInt(String(query.page  ?? '1'),  10) || 1)
+  const limit = Math.min(100, Math.max(1,
+                  parseInt(String(query.limit ?? '20'), 10) || 20))
+  return { page, limit, offset: (page - 1) * limit }
 }
 
-export function buildPaginationMeta(
-  total: number,
-  page: number,
-  limit: number,
-): PaginationMeta {
-  return {
-    page,
-    limit,
-    total,
-    totalPages: Math.ceil(total / limit),
-  };
+export function buildMeta(page: number, limit: number, total: number) {
+  return { page, limit, total, totalPages: Math.ceil(total / limit) }
+}
+
+export function buildPaginationMeta(total: number, page: number, limit: number) {
+  return { page, limit, total, totalPages: Math.ceil(total / limit) }
 }
