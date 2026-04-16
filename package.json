@@ -1,0 +1,25 @@
+{
+  "name": "hcm-root",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["client", "server", "shared"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev":              "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build":            "npm run build -w shared && npm run build -w server && npm run build -w client",
+    "lint":             "eslint \"{client,server,shared}/src/**/*.{ts,tsx}\"",
+    "test":             "npm run test -w server && npm run test -w client",
+    "test:integration": "npm run test:integration -w server",
+    "migrate":          "knex --knexfile server/knexfile.ts migrate:latest",
+    "migrate:rollback": "knex --knexfile server/knexfile.ts migrate:rollback",
+    "seed":             "knex --knexfile server/knexfile.ts seed:run"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "eslint": "^9.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "prettier": "^3.0.0",
+    "eslint-config-prettier": "^9.0.0"
+  }
+}
