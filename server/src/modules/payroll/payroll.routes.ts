@@ -29,6 +29,9 @@ const createRunSchema = z.object({
   name: z.string().min(1),
   periodStart: z.string().date(),
   periodEnd: z.string().date(),
+}).refine(data => new Date(data.periodEnd) >= new Date(data.periodStart), {
+  message: "periodEnd must be after or equal to periodStart",
+  path: ["periodEnd"],
 });
 
 const statusSchema = z.object({

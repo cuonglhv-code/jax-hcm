@@ -14,35 +14,68 @@ export async function seed(knex: Knex): Promise<void> {
   const salesDId = getDId('Sales');
 
   const hrManagerId = uuidv4();
-  const emManagerId = uuidv4();
+  const lineManagerId = uuidv4();
 
   const emps = [];
 
-  // Core users
-  for (const user of users) {
-    if (user.role === 'super_admin') {
-      emps.push({ id: uuidv4(), user_id: user.id, first_name: 'Super', last_name: 'Admin', email: user.email, department_id: hrDId, job_title_id: getTId('HR Manager'), status: 'active', hire_date: '2023-01-01', employment_type: 'full_time' });
-    } else if (user.role === 'hr_manager') {
-      emps.push({ id: hrManagerId, user_id: user.id, first_name: 'Jane', last_name: 'Doe', email: user.email, department_id: hrDId, job_title_id: getTId('HR Manager'), status: 'active', hire_date: '2023-02-01', employment_type: 'full_time' });
-    } else if (user.role === 'line_manager') {
-      emps.push({ id: emManagerId, user_id: user.id, first_name: 'John', last_name: 'Smith', email: user.email, department_id: engDId, job_title_id: getTId('Engineering Manager'), status: 'active', hire_date: '2023-03-01', employment_type: 'full_time' });
-    } else {
-      emps.push({ id: uuidv4(), user_id: user.id, first_name: 'Alice', last_name: 'Johnson', email: user.email, department_id: engDId, job_title_id: getTId('Frontend Developer'), manager_id: emManagerId, status: 'active', hire_date: '2023-04-01', employment_type: 'full_time' });
-    }
+  // Find specific users for fixed roles to ensure tests have stable targets
+  const adminUser = users.find(u => u.email === 'admin@jaxtina.com');
+  const hr1User = users.find(u => u.email === 'hr1@jaxtina.com');
+  const hr2User = users.find(u => u.email === 'hr2@jaxtina.com');
+  const mgr1User = users.find(u => u.email === 'manager1@jaxtina.com');
+  const mgr2User = users.find(u => u.email === 'manager2@jaxtina.com');
+
+  if (adminUser) {
+    emps.push({ id: uuidv4(), user_id: adminUser.id, first_name: 'Admin', last_name: 'User', email: adminUser.email, department_id: hrDId, job_title_id: getTId('HR Manager'), status: 'active', hire_date: '2023-01-01', employment_type: 'full_time' });
   }
 
-  // Generate 50 dummy employees
-  for (let i = 5; i <= 50; i++) {
+  if (hr1User) {
+    emps.push({ id: hrManagerId, user_id: hr1User.id, first_name: 'Jane', last_name: 'HR', email: hr1User.email, department_id: hrDId, job_title_id: getTId('HR Manager'), status: 'active', hire_date: '2023-02-01', employment_type: 'full_time' });
+  }
+
+  if (hr2User) {
+    emps.push({ id: uuidv4(), user_id: hr2User.id, first_name: 'John', last_name: 'HR', email: hr2User.email, department_id: hrDId, job_title_id: getTId('HR Manager'), status: 'active', hire_date: '2023-02-15', employment_type: 'full_time' });
+  }
+
+  if (mgr1User) {
+    emps.push({ id: lineManagerId, user_id: mgr1User.id, first_name: 'Manager', last_name: 'One', email: mgr1User.email, department_id: engDId, job_title_id: getTId('Engineering Manager'), status: 'active', hire_date: '2023-03-01', employment_type: 'full_time' });
+  }
+
+  if (mgr2User) {
+    emps.push({ id: uuidv4(), user_id: mgr2User.id, first_name: 'Manager', last_name: 'Two', email: mgr2User.email, department_id: engDId, job_title_id: getTId('Engineering Manager'), status: 'active', hire_date: '2023-03-15', employment_type: 'full_time' });
+  }
+
+  // Link emp1-emp7
+  const employeeUsers = users.filter(u => u.role === 'employee');
+  for (const user of employeeUsers) {
+    emps.push({ 
+      id: uuidv4(), 
+      user_id: user.id, 
+      first_name: user.email.split('@')[0], 
+      last_name: 'Seeded', 
+      email: user.email, 
+      department_id: engDId, 
+      job_title_id: getTId('Frontend Developer'), 
+      manager_id: lineManagerId, 
+      status: 'active', 
+      hire_date: '2023-04-01', 
+      employment_type: 'full_time' 
+    });
+  }
+
+  // Generate some dummy employees without users
+  for (let i = 8; i <= 20; i++) {
     emps.push({
       id: uuidv4(),
       user_id: null,
       first_name: `Employee${i}`,
-      last_name: `Test`,
-      email: `employee${i}@jaxtina.com`,
+      last_name: `Dummy`,
+      email: `employee${i}@example.com`,
       department_id: salesDId,
       job_title_id: getTId('Account Executive'),
       status: 'active',
-      hire_date: '2024-01-01', employment_type: 'full_time'
+      hire_date: '2024-01-01', 
+      employment_type: 'full_time'
     });
   }
 

@@ -36,7 +36,7 @@ describe('Employee API', () => {
         });
       
       const newEmp = await db('employees').where({ email }).first();
-      const newUser = await db('users').where({ employee_id: newEmp.id }).first();
+      const newUser = await db('users').where({ email }).first();
       
       const token = getTestToken('employee', { userId: newUser.id, email: newUser.email });
       const res = await request(app).get('/api/employees').set('Authorization', token);

@@ -20,16 +20,18 @@ describe('Notifications API', () => {
         department_id: dept.id, 
         job_title_id: title.id,
         employment_type: 'full_time',
-        status: 'active'
+        status: 'active',
+        hire_date: '2024-01-01'
       }).returning('*').then(r => r[0]);
 
       const user = await db('users').insert({ 
         id: uuidv4(), 
-        employee_id: emp.id, 
         role: 'employee', 
         email: emp.email, 
         password_hash: 'hi' 
       }).returning('*').then(r => r[0]);
+
+      await db('employees').where('id', emp.id).update({ user_id: user.id });
       
       const token = getTestToken('employee', { userId: user.id });
       const res = await request(app).get('/api/notifications').set('Authorization', token);
@@ -95,7 +97,8 @@ describe('Notifications API', () => {
   describe('Integration: leave approval triggers notification', () => {
     it('after reviewLeaveRequest(approve), employee has new notification', async () => {
       const u = await db('users').where('role', 'employee').first();
-      const empId = u.employee_id;
+      const emp = await db('employees').where('user_id', u.id).first();
+      const empId = emp.id;
       const leaveType = await db('leave_types').first();
       
       const reqId = uuidv4();

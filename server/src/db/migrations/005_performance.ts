@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     t.string('name', 255).notNullable()
     t.date('start_date').notNullable()
     t.date('end_date').notNullable()
-    t.boolean('is_active').notNullable().defaultTo(false)
+    t.string('status', 50).notNullable().defaultTo('draft') // Changed from is_active to status to match service
     t.timestamp('created_at', { useTz: true }).notNullable().defaultTo(knex.fn.now())
     t.timestamp('updated_at', { useTz: true }).notNullable().defaultTo(knex.fn.now())
   })
@@ -42,8 +42,8 @@ export async function up(knex: Knex): Promise<void> {
       .references('id').inTable('appraisal_cycles').onDelete('CASCADE')
     t.uuid('employee_id').notNullable()
       .references('id').inTable('employees').onDelete('CASCADE')
-    t.uuid('manager_id').notNullable()
-      .references('id').inTable('employees').onDelete('CASCADE')
+    t.uuid('manager_id').nullable() // Changed to nullable to match common practices if manager not assigned yet
+      .references('id').inTable('employees').onDelete('SET NULL')
     t.string('status', 50).notNullable().defaultTo('draft')
       .checkIn(['draft', 'submitted', 'reviewed', 'acknowledged'])
     t.timestamp('self_submitted_at', { useTz: true }).nullable()
@@ -84,6 +84,8 @@ export async function up(knex: Knex): Promise<void> {
       .references('id').inTable('appraisal_cycles').onDelete('SET NULL')
     t.string('title', 255).notNullable()
     t.text('description').nullable()
+    t.string('category', 50).nullable() // Added category
+    t.integer('weight').notNullable().defaultTo(0) // Added weight
     t.decimal('completion_percentage', 5, 2).notNullable().defaultTo(0)
     t.date('due_date').nullable()
     t.timestamp('created_at', { useTz: true }).notNullable().defaultTo(knex.fn.now())
@@ -98,6 +100,7 @@ export async function up(knex: Knex): Promise<void> {
     t.uuid('goal_id').notNullable()
       .references('id').inTable('goals').onDelete('CASCADE')
     t.string('title', 255).notNullable()
+    t.decimal('start_value', 14, 2).notNullable().defaultTo(0) // Added start_value
     t.decimal('target_value', 14, 2).notNullable()
     t.decimal('current_value', 14, 2).notNullable().defaultTo(0)
     t.string('unit', 50).nullable()

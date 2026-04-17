@@ -1,24 +1,26 @@
-import express        from 'express'
-import helmet         from 'helmet'
-import cors           from 'cors'
-import cookieParser   from 'cookie-parser'
-import path           from 'node:path'
+import express from 'express'
+import helmet from 'helmet'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import path from 'node:path'
 
-import { env }                   from './config/env'
+import { env } from './config/env'
 import { db, testDatabaseConnection } from './config/database'
 import { httpLogger, logger } from './utils/logger'
 import { errorHandler } from './middleware/errorHandler'
+import { sendSuccess } from './utils/response'
+import pkg from '../../package.json'
 
-import authRouter                 from './modules/auth/auth.routes'
-import { employeeRouter }         from './modules/employees/employee.routes'
-import { payrollRouter }          from './modules/payroll/payroll.routes'
-import { recruitmentRouter }      from './modules/recruitment/recruitment.routes'
-import { performanceRouter }      from './modules/performance/performance.routes'
-import { leaveRouter }            from './modules/leave/leave.routes'
-import { learningRouter }         from './modules/learning/learning.routes'
-import { searchRouter }           from './modules/search/search.routes'
-import { notificationRouter }     from './modules/notifications/notification.routes'
-import { adminRouter }            from './modules/admin/admin.routes'
+import authRouter from './modules/auth/auth.routes'
+import { employeeRouter } from './modules/employees/employee.routes'
+import { payrollRouter } from './modules/payroll/payroll.routes'
+import { recruitmentRouter } from './modules/recruitment/recruitment.routes'
+import { performanceRouter } from './modules/performance/performance.routes'
+import { leaveRouter } from './modules/leave/leave.routes'
+import { learningRouter } from './modules/learning/learning.routes'
+import { searchRouter } from './modules/search/search.routes'
+import { notificationRouter } from './modules/notifications/notification.routes'
+import { adminRouter } from './modules/admin/admin.routes'
 
 const app = express()
 
@@ -29,36 +31,42 @@ app.set('trust proxy', 1)
 app.use(httpLogger)
 
 // Security headers
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc:    ["'self'"],
-      scriptSrc:     ["'self'"],
-      styleSrc:      ["'self'", "'unsafe-inline'"],
-      imgSrc:        ["'self'", 'data:', 'blob:'],
-      connectSrc:    ["'self'"],
-      fontSrc:       ["'self'"],
-      objectSrc:     ["'none'"],
-      upgradeInsecureRequests: [],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false,
-}))
+    crossOriginEmbedderPolicy: false,
+  })
+)
 
 // CORS
-app.use(cors({
-  origin: (origin, callback) => {
-    const allowed = [env.CLIENT_URL]
-    if (!origin || allowed.includes(origin) || env.NODE_ENV === 'development') {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}))
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowed = [env.CLIENT_URL]
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true)
+      } else if (env.NODE_ENV === 'development') {
+        callback(null, true)
+      } else {
+        callback(null, false)
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+)
 
 // Parsing
 app.use(cookieParser())
@@ -69,32 +77,38 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }))
 app.get('/health', async (_req, res) => {
   try {
     await db.raw('SELECT 1')
-    res.json({
-      status: 'UP',
+    sendSuccess(res, {
+      status: 'ok',
+      environment: env.NODE_ENV,
+      version: pkg.version,
+      dbStatus: 'connected',
+      storageProvider: env.FILE_STORAGE_PROVIDER,
+      uptime: Math.floor(process.uptime()),
       timestamp: new Date().toISOString(),
-      services: { database: 'UP' },
-      uptime: process.uptime()
     })
   } catch (err) {
     res.status(503).json({
-      status: 'DOWN',
-      timestamp: new Date().toISOString(),
-      services: { database: 'DOWN' }
+      success: false,
+      error: 'Database unavailable',
+      data: {
+        status: 'down',
+        timestamp: new Date().toISOString(),
+      },
     })
   }
 })
 
 // Routes
-app.use('/api/auth',          authRouter)
-app.use('/api/employees',     employeeRouter)
-app.use('/api/payroll',       payrollRouter)
-app.use('/api/recruitment',   recruitmentRouter)
-app.use('/api/performance',   performanceRouter)
-app.use('/api/leave',         leaveRouter)
-app.use('/api/learning',      learningRouter)
-app.use('/api/search',        searchRouter)
+app.use('/api/auth', authRouter)
+app.use('/api/employees', employeeRouter)
+app.use('/api/payroll', payrollRouter)
+app.use('/api/recruitment', recruitmentRouter)
+app.use('/api/performance', performanceRouter)
+app.use('/api/leave', leaveRouter)
+app.use('/api/learning', learningRouter)
+app.use('/api/search', searchRouter)
 app.use('/api/notifications', notificationRouter)
-app.use('/api/admin',         adminRouter)
+app.use('/api/admin', adminRouter)
 
 // Static files (production only)
 if (env.NODE_ENV === 'production') {
@@ -142,7 +156,7 @@ async function bootstrap() {
   }
 
   process.on('SIGTERM', () => shutdown('SIGTERM'))
-  process.on('SIGINT',  () => shutdown('SIGINT'))
+  process.on('SIGINT', () => shutdown('SIGINT'))
 }
 
 if (env.NODE_ENV !== 'test') {
@@ -152,7 +166,7 @@ if (env.NODE_ENV !== 'test') {
   })
 }
 
-process.on('uncaughtException',  err => {
+process.on('uncaughtException', err => {
   logger.error({ err }, '[uncaughtException]')
   process.exit(1)
 })

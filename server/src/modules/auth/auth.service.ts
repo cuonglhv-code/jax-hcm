@@ -7,7 +7,7 @@ import { AppError } from '../../middleware/errorHandler'
 import type { JwtPayload, AuthUser, Role } from '@hcm/shared'
 
 export function signAccessToken(payload: JwtPayload): string {
-  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN as any })
+  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions)
 }
 
 export function signRefreshToken(): { raw: string; hash: string } {
@@ -53,11 +53,18 @@ export async function revokeRefreshToken(raw: string): Promise<void> {
   await db('refresh_tokens').update({ revoked_at: db.fn.now() }).where({ token_hash: hash })
 }
 
-export async function login(email: string, pass: string): Promise<{ user: AuthUser; accessToken: string; refreshToken: string }> {
+export async function login(
+  email: string,
+  pass: string
+): Promise<{ user: AuthUser; accessToken: string; refreshToken: string }> {
   const user = await db('users')
     .leftJoin('employees', 'users.id', 'employees.user_id')
     .select('users.*', 'employees.first_name', 'employees.last_name', 'employees.id as employee_id')
-    .where({ 'users.email': email.toLowerCase(), 'users.is_active': true, 'users.deleted_at': null })
+    .where({
+      'users.email': email.toLowerCase(),
+      'users.is_active': true,
+      'users.deleted_at': null,
+    })
     .first()
 
   if (!user || !(await bcrypt.compare(pass, user.password_hash))) {
@@ -85,7 +92,14 @@ export async function login(email: string, pass: string): Promise<{ user: AuthUs
 
 export async function getMe(userId: string): Promise<AuthUser> {
   const user = await db('users')
-    .select('users.id', 'users.email', 'users.role', 'employees.first_name', 'employees.last_name', 'employees.id as employee_id')
+    .select(
+      'users.id',
+      'users.email',
+      'users.role',
+      'employees.first_name',
+      'employees.last_name',
+      'employees.id as employee_id'
+    )
     .leftJoin('employees', 'employees.user_id', 'users.id')
     .where({ 'users.id': userId })
     .first()

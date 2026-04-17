@@ -18,7 +18,7 @@ export function authenticate(req: Request, _res: Response, next: NextFunction): 
     return next(new AppError(401, 'No token provided'))
   }
 
-  const token  = header.slice(7)
+  const token = header.slice(7)
   const secret = env.JWT_SECRET
 
   if (!secret || secret === 'CHANGE_ME_IN_PRODUCTION_USE_32_CHAR_MIN') {
@@ -30,6 +30,6 @@ export function authenticate(req: Request, _res: Response, next: NextFunction): 
     req.user = payload
     next()
   } catch (err) {
-    next(err)
+    next(new AppError(401, 'Invalid or expired token'))
   }
 }
