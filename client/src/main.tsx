@@ -1,47 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './contexts/AuthContext';
-import { AppRouter } from './router/AppRouter';
-import './index.css';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { AuthProvider } from './contexts/AuthContext'
+import { ToastProvider } from './shared/components/Toast'
+import AppRouter from './router/AppRouter'
+import './styles/globals.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30_000,
+      staleTime: 5 * 60 * 1000,
       retry: 1,
     },
   },
-});
-
-// Apply saved theme on load
-const savedTheme = localStorage.getItem('hcm_theme');
-if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-  document.documentElement.classList.add('dark');
-}
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <ThemeProvider>
         <AuthProvider>
-          <AppRouter />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                borderRadius: '10px',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '14px',
-              },
-            }}
-          />
+          <ToastProvider>
+            <AppRouter />
+          </ToastProvider>
         </AuthProvider>
-      </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
+      </ThemeProvider>
     </QueryClientProvider>
-  </React.StrictMode>,
-);
+  </React.StrictMode>
+)

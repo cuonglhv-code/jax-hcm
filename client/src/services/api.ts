@@ -1,42 +1,56 @@
-import axios from 'axios';
+import axios from 'axios'
 
-export const api = axios.create({
-  baseURL: '/api',
-  headers: { 'Content-Type': 'application/json' },
-});
+let _accessToken: string | null = null
+let _onLogout: (() => void) | null = null
 
-// Request interceptor — attach token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('hcm_access_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+export function setAccessToken(token: string | null) { _accessToken = token }
+export function setLogoutHandler(fn: () => void)     { _onLogout = fn }
 
-// Response interceptor — handle 401
+export const api = axios.create({ baseURL: '/api', withCredentials: true })
+
+api.interceptors.request.use(config => {
+  if (_accessToken) {
+    config.headers.Authorization = `Bearer ${_accessToken}`
+  }
+  return config
+})
+
+let isRefreshing = false
+let refreshQueue: Array<(token: string) => void> = []
+
 api.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('hcm_refresh_token');
-      if (refreshToken) {
-        try {
-          const { data } = await axios.post('/api/auth/refresh', { refreshToken });
-          const { accessToken, refreshToken: newRefresh } = data.data;
-          localStorage.setItem('hcm_access_token', accessToken);
-          localStorage.setItem('hcm_refresh_token', newRefresh);
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          return api(originalRequest);
-        } catch {
-          localStorage.removeItem('hcm_access_token');
-          localStorage.removeItem('hcm_refresh_token');
-          window.location.href = '/login';
-        }
-      }
+  res => res,
+  async err => {
+    const original = err.config
+    if (err.response?.status !== 401 || original._retry) {
+      return Promise.reject(err)
     }
-    return Promise.reject(error);
-  },
-);
-
-export default api;
+    if (isRefreshing) {
+      return new Promise(resolve => {
+        refreshQueue.push(token => {
+          original.headers.Authorization = `Bearer ${token}`
+          resolve(api(original))
+        })
+      })
+    }
+    original._retry = true
+    isRefreshing = true
+    try {
+      const { data } = await axios.post(
+        '/api/auth/refresh', {}, { withCredentials: true }
+      )
+      const newToken = data.data.accessToken
+      setAccessToken(newToken)
+      refreshQueue.forEach(cb => cb(newToken))
+      refreshQueue = []
+      original.headers.Authorization = `Bearer ${newToken}`
+      return api(original)
+    } catch {
+      setAccessToken(null)
+      _onLogout?.()
+      return Promise.reject(err)
+    } finally {
+      isRefreshing = false
+    }
+  }
+)

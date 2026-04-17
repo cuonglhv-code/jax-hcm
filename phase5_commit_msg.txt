@@ -1,0 +1,11 @@
+feat: Phase 5 complete — React frontend shell, design system, auth flow
+
+Vite + React 18 + TypeScript + Tailwind with Nexus CSS token system
+Auth: JWT access token + httpOnly refresh cookie, silent refresh interceptor
+Layout: collapsible sidebar (240/64px), topbar, AppLayout
+17 shared components: Button, Modal, Table, Form, Input, Select,
+  Badge, Avatar, PageHeader, EmptyState, Skeleton, Tabs,
+  DatePicker, FileUpload, ConfirmDialog, Toast, KpiCard
+Pages: LoginPage, Page403, Page404, all module page stubs
+Router: lazy-loaded routes, ProtectedRoute, RoleGuard RBAC
+Dark mode: CSS variable token swap via data-theme attribute

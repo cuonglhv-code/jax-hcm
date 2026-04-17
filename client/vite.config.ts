@@ -1,13 +1,13 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@hcm/shared': path.resolve(__dirname, '../shared/src/index.ts'),
+      '@hcm/shared': path.resolve(__dirname, '../shared/src'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
   server: {
@@ -23,4 +23,9 @@ export default defineConfig({
       },
     },
   },
-});
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+  },
+})

@@ -1,73 +1,73 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import type { AuthUser, LoginResponse } from '@hcm/shared';
-import api from '../services/api';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { api, setAccessToken, setLogoutHandler } from '../services/api';
+import { AuthUser } from '@hcm/shared';
 
-interface AuthContextType {
+interface AuthContextValue {
   user: AuthUser | null;
   isLoading: boolean;
+  login(email: string, password: string): Promise<void>;
+  logout(): Promise<void>;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Restore session on mount
-  useEffect(() => {
-    const token = localStorage.getItem('hcm_access_token');
-    if (token) {
-      api
-        .get<{ success: boolean; data: AuthUser }>('/auth/me')
-        .then(({ data }) => setUser(data.data))
-        .catch(() => {
-          localStorage.removeItem('hcm_access_token');
-          localStorage.removeItem('hcm_refresh_token');
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const login = useCallback(async (email: string, password: string) => {
-    const { data } = await api.post<{ success: boolean; data: LoginResponse }>('/auth/login', {
-      email,
-      password,
-    });
-    const { accessToken, refreshToken, user: authUser } = data.data;
-    localStorage.setItem('hcm_access_token', accessToken);
-    localStorage.setItem('hcm_refresh_token', refreshToken);
-    setUser(authUser);
-  }, []);
-
-  const logout = useCallback(async () => {
-    const refreshToken = localStorage.getItem('hcm_refresh_token');
+  const logout = async () => {
     try {
-      await api.post('/auth/logout', { refreshToken });
-    } catch {
-      // Ignore errors on logout
+      await api.post('/auth/logout');
+    } catch (err) {
+      // ignore
     } finally {
-      localStorage.removeItem('hcm_access_token');
-      localStorage.removeItem('hcm_refresh_token');
+      setAccessToken(null);
       setUser(null);
     }
+  };
+
+  useEffect(() => {
+    setLogoutHandler(() => logout());
+    const initAuth = async () => {
+      try {
+        const { data: refreshData } = await api.post('/auth/refresh');
+        setAccessToken(refreshData.data.accessToken);
+        const { data: userData } = await api.get('/auth/me');
+        setUser(userData.data);
+      } catch (err) {
+        setAccessToken(null);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    initAuth();
   }, []);
 
+  const login = async (email: string, password: string) => {
+    const { data } = await api.post('/auth/login', { email, password });
+    setAccessToken(data.data.accessToken);
+    setUser(data.data.user);
+  };
+
   return (
-    <AuthContext.Provider
-      value={{ user, isLoading, isAuthenticated: !!user, login, logout }}
-    >
+    <AuthContext.Provider value={{
+      user,
+      isLoading,
+      login,
+      logout,
+      isAuthenticated: !!user
+    }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
