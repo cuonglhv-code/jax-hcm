@@ -1,10 +1,55 @@
-import React from 'react';
+import React from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useCandidate, useApplicationsByCandidate } from '@/hooks/useRecruitment'
+import { PageHeader } from '@/shared/components/PageHeader'
+import { Avatar } from '@/shared/components/Avatar'
+import { Badge } from '@/shared/components/Badge'
+import { Button } from '@/shared/components/Button'
+import { Skeleton } from '@/shared/components/Skeleton'
+import { format } from 'date-fns'
 
 export default function CandidateDetailPage() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { data: candData, isLoading } = useCandidate(id)
+  const { data: appsData } = useApplicationsByCandidate(id)
+  const candidate = candData?.data
+  const applications = appsData?.data ?? []
+
+  if (isLoading) return <div className="space-y-4"><Skeleton variant="heading" /><Skeleton variant="rect" height="300px" /></div>
+  if (!candidate) return <div className="card text-text-muted">Candidate not found.</div>
+
   return (
-    <div className="card">
-      <h1 className="font-display text-xl font-bold">CandidateDetail</h1>
-      <p className="text-text-muted mt-1">Coming in Phase 6.</p>
+    <div>
+      <PageHeader
+        title={candidate.name}
+        breadcrumbs={[{ label: 'Recruitment', href: '/recruitment' }, { label: candidate.name }]}
+        actions={<Button variant="ghost" onClick={() => navigate(-1)}>← Back</Button>}
+      />
+      <div className="card max-w-2xl space-y-4">
+        <div className="flex items-center gap-4">
+          <Avatar name={candidate.name} size="lg" />
+          <div>
+            <h2 className="font-display text-lg font-bold">{candidate.name}</h2>
+            <div className="text-sm text-text-muted">{candidate.email}</div>
+            {candidate.phone && <div className="text-sm text-text-muted">{candidate.phone}</div>}
+          </div>
+        </div>
+        <div>
+          <h3 className="font-medium text-sm text-text-base mb-3">Applications</h3>
+          <div className="space-y-2">
+            {applications.map((app: any) => (
+              <div key={app.id} className="flex items-center justify-between p-3 bg-surface-offset rounded-lg text-sm">
+                <div>
+                  <div className="font-medium">{app.requisition?.title ?? 'Unknown Position'}</div>
+                  <div className="text-text-muted text-xs">{app.appliedAt ? format(new Date(app.appliedAt), 'dd MMM yyyy') : ''}</div>
+                </div>
+                <Badge variant="info">{app.stage}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }

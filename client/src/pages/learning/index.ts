@@ -1,0 +1,5 @@
+export { default as CourseCataloguePage } from './CourseCataloguePage'
+export { default as CourseDetailPage } from './CourseDetailPage'
+export { default as MyLearningPage } from './MyLearningPage'
+export { default as LearningPlanPage } from './LearningPlanPage'
+export { default as MandatoryTrainingPage } from './MandatoryTrainingPage'

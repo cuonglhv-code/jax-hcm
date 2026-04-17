@@ -1,0 +1,5 @@
+export { default as PayrollDashboardPage } from './PayrollDashboardPage'
+export { default as PayrollRunsPage } from './PayrollRunsPage'
+export { default as PayrollRunDetailPage } from './PayrollRunDetailPage'
+export { default as TaxRulesPage } from './TaxRulesPage'
+export { default as PayslipPage } from './PayslipPage'
