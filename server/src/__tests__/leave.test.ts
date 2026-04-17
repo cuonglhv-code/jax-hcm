@@ -19,7 +19,7 @@ describe('Leave API', () => {
 
   describe('POST /api/leave/requests', () => {
     it('creates pending request with valid dates + sufficient balance', async () => {
-      const token = getTestToken('employee', empUserId);
+      const token = getTestToken('employee', { userId: empUserId });
       const leaveType = await db('leave_types').first();
       const year = new Date().getFullYear();
       
@@ -44,7 +44,7 @@ describe('Leave API', () => {
     });
 
     it('returns 400 if endDate before startDate', async () => {
-      const token = getTestToken('employee', empUserId);
+      const token = getTestToken('employee', { userId: empUserId });
       const leaveType = await db('leave_types').first();
       const res = await request(app)
         .post('/api/leave/requests')
@@ -88,7 +88,7 @@ describe('Leave API', () => {
         status: 'pending', 
         total_days: 2 
       }).returning('*').then(r => r[0]);
-      const token = getTestToken('employee', empUserId);
+      const token = getTestToken('employee', { userId: empUserId });
 
       const res = await request(app).post(`/api/leave/requests/${pendingReq.id}/cancel`).set('Authorization', token);
       expect(res.status).toBe(200);
@@ -100,7 +100,7 @@ describe('Leave API', () => {
     it('clock-in creates record', async () => {
       // Use a fresh user to avoid 'already clocked in' if test order varies
       const newUser = await db('users').where('role', 'employee').orderBy('id', 'desc').first();
-      const token = getTestToken('employee', newUser.id);
+      const token = getTestToken('employee', { userId: newUser.id });
       
       const res = await request(app).post('/api/leave/attendance/clock-in').set('Authorization', token);
       expect(res.status).toBe(201);
@@ -109,7 +109,7 @@ describe('Leave API', () => {
 
     it('clock-out sets time', async () => {
        const newUser = await db('users').where('role', 'employee').orderBy('id', 'desc').first();
-       const token = getTestToken('employee', newUser.id);
+       const token = getTestToken('employee', { userId: newUser.id });
        
        await request(app).post('/api/leave/attendance/clock-in').set('Authorization', token);
        const res = await request(app).post('/api/leave/attendance/clock-out').set('Authorization', token);

@@ -1,18 +1,10 @@
 import type { Knex } from 'knex'
-import * as dotenv from 'dotenv'
+import { env } from './src/config/env'
 import path from 'path'
-
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
 
 const base: Knex.Config = {
   client: 'pg',
-  connection: {
-    host: process.env.DB_HOST ?? 'localhost',
-    port: Number(process.env.DB_PORT ?? 5432),
-    database: process.env.DB_NAME ?? 'hcm_db',
-    user: process.env.DB_USER ?? 'hcm_user',
-    password: process.env.DB_PASSWORD ?? 'secret',
-  },
+  connection: env.DATABASE_URL,
   migrations: {
     directory: path.resolve(__dirname, 'src/db/migrations'),
     extension: 'ts',
@@ -22,25 +14,25 @@ const base: Knex.Config = {
     directory: path.resolve(__dirname, 'src/db/seeds'),
     extension: 'ts',
   },
-  pool: { min: 2, max: 10 },
+  pool: { 
+    min: env.DATABASE_POOL_MIN, 
+    max: env.DATABASE_POOL_MAX 
+  },
 }
 
-const config: { [env: string]: Knex.Config } = {
+const config: { [key: string]: Knex.Config } = {
   development: { ...base, debug: false },
   production: {
     ...base,
     debug: false,
     connection: {
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
+      connectionString: env.DATABASE_URL,
+      ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     },
   },
   test: {
     ...base,
-    connection: process.env.DATABASE_URL || {
-      ...(base.connection as object),
-      database: process.env.DB_NAME_TEST ?? 'jax_hcm_test',
-    },
+    connection: env.DATABASE_URL,
   },
 }
 

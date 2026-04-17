@@ -1,20 +1,21 @@
 version: '3.9'
-
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: jax_hcm_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: hcm_user
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: hcm_db
-    ports:
-      - '5432:5432'
+      POSTGRES_USER:     ${POSTGRES_USER:-hcm_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hcm_password}
+      POSTGRES_DB:       ${POSTGRES_DB:-jax_hcm}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U hcm_user -d hcm_db']
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hcm_user}"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
@@ -22,19 +23,34 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: production
+    container_name: jax_hcm_app
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - '4000:4000'
-      - '5173:5173'
-    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-hcm_user}:${POSTGRES_PASSWORD:-hcm_password}@postgres:5432/${POSTGRES_DB:-jax_hcm}
+      NODE_ENV: production
+      PORT: 4000
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:4000}
+      FILE_STORAGE_PROVIDER: ${FILE_STORAGE_PROVIDER:-local}
+      FILE_STORAGE_PATH: /app/uploads
+      COMPANY_NAME: ${COMPANY_NAME:-Jaxtina HCM}
+      COMPANY_JURISDICTION: ${COMPANY_JURISDICTION:-GB}
     volumes:
-      - .:/app
-      - /app/node_modules
-      - ./uploads:/app/uploads
-    command: npm run dev
+      - uploads_data:/app/uploads
+    ports:
+      - "${APP_PORT:-4000}:4000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
 
 volumes:
-  pgdata:
+  postgres_data:
+  uploads_data:

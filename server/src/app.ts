@@ -1,12 +1,14 @@
-import 'dotenv/config'
 import express        from 'express'
 import helmet         from 'helmet'
 import cors           from 'cors'
 import cookieParser   from 'cookie-parser'
-import morgan         from 'morgan'
+import path           from 'node:path'
 
-import { testDatabaseConnection } from './config/database'
-import { errorHandler }           from './middleware/errorHandler'
+import { env }                   from './config/env'
+import { db, testDatabaseConnection } from './config/database'
+import { httpLogger, logger } from './utils/logger'
+import { errorHandler } from './middleware/errorHandler'
+
 import authRouter                 from './modules/auth/auth.routes'
 import { employeeRouter }         from './modules/employees/employee.routes'
 import { payrollRouter }          from './modules/payroll/payroll.routes'
@@ -14,45 +16,94 @@ import { recruitmentRouter }      from './modules/recruitment/recruitment.routes
 import { performanceRouter }      from './modules/performance/performance.routes'
 import { leaveRouter }            from './modules/leave/leave.routes'
 import { learningRouter }         from './modules/learning/learning.routes'
+import { searchRouter }           from './modules/search/search.routes'
+import { notificationRouter }     from './modules/notifications/notification.routes'
+import { adminRouter }            from './modules/admin/admin.routes'
 
-const app  = express()
-const PORT = process.env.PORT ?? 4000
+const app = express()
 
-// Security & parsing
-app.use(helmet())
-app.use(cors({
-  origin:      process.env.CLIENT_URL ?? 'http://localhost:5173',
-  credentials: true,
+// Trust proxy (for rate limiting behind nginx/load balancer)
+app.set('trust proxy', 1)
+
+// HTTP logging
+app.use(httpLogger)
+
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc:    ["'self'"],
+      scriptSrc:     ["'self'"],
+      styleSrc:      ["'self'", "'unsafe-inline'"],
+      imgSrc:        ["'self'", 'data:', 'blob:'],
+      connectSrc:    ["'self'"],
+      fontSrc:       ["'self'"],
+      objectSrc:     ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
 }))
+
+// CORS
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = [env.CLIENT_URL]
+    if (!origin || allowed.includes(origin) || env.NODE_ENV === 'development') {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
+
+// Parsing
 app.use(cookieParser())
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
+app.use(express.json({ limit: '1mb' }))
+app.use(express.urlencoded({ extended: true, limit: '1mb' }))
 
 // Health check (unauthenticated)
-app.get('/health', (_req, res) => {
-  res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() } })
+app.get('/health', async (_req, res) => {
+  try {
+    await db.raw('SELECT 1')
+    res.json({
+      status: 'UP',
+      timestamp: new Date().toISOString(),
+      services: { database: 'UP' },
+      uptime: process.uptime()
+    })
+  } catch (err) {
+    res.status(503).json({
+      status: 'DOWN',
+      timestamp: new Date().toISOString(),
+      services: { database: 'DOWN' }
+    })
+  }
 })
 
-// API routes
-app.use('/api/auth', authRouter)
-
-// Core API Routes
-app.use('/api/employees',    employeeRouter)
-app.use('/api/payroll',      payrollRouter)
-app.use('/api/recruitment',  recruitmentRouter)
-app.use('/api/performance',  performanceRouter)
-app.use('/api/leave',        leaveRouter)
-app.use('/api/learning',     learningRouter)
-
-// Additional API Routes
-import { searchRouter }       from './modules/search/search.routes'
-import { notificationRouter } from './modules/notifications/notification.routes'
-import { adminRouter }        from './modules/admin/admin.routes'
-
+// Routes
+app.use('/api/auth',          authRouter)
+app.use('/api/employees',     employeeRouter)
+app.use('/api/payroll',       payrollRouter)
+app.use('/api/recruitment',   recruitmentRouter)
+app.use('/api/performance',   performanceRouter)
+app.use('/api/leave',         leaveRouter)
+app.use('/api/learning',      learningRouter)
 app.use('/api/search',        searchRouter)
 app.use('/api/notifications', notificationRouter)
 app.use('/api/admin',         adminRouter)
+
+// Static files (production only)
+if (env.NODE_ENV === 'production') {
+  const clientPath = path.join(__dirname, '../../client/dist')
+  app.use(express.static(clientPath))
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(clientPath, 'index.html'))
+  })
+}
 
 // 404
 app.use((_req, res) => {
@@ -64,18 +115,49 @@ app.use(errorHandler)
 
 // Bootstrap
 async function bootstrap() {
-  await testDatabaseConnection()
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`)
+  const server = app.listen(env.PORT, () => {
+    logger.info(`🚀 Server running on http://localhost:${env.PORT}`)
   })
+
+  // Verify DB
+  try {
+    await testDatabaseConnection()
+  } catch (err) {
+    logger.error({ err }, 'Database connection failed during bootstrap')
+  }
+
+  // Graceful shutdown
+  const shutdown = async (signal: string) => {
+    logger.info(`${signal} received. Shutting down gracefully...`)
+    server.close(async () => {
+      await db.destroy()
+      logger.info('✅ Database connections closed.')
+      process.exit(0)
+    })
+    // Force exit after 10s
+    setTimeout(() => {
+      logger.error('❌ Force shutdown after timeout.')
+      process.exit(1)
+    }, 10_000)
+  }
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'))
+  process.on('SIGINT',  () => shutdown('SIGINT'))
 }
 
-// Bootstrap - only if not in test
-if (process.env.NODE_ENV !== 'test') {
+if (env.NODE_ENV !== 'test') {
   bootstrap().catch(err => {
-    console.error('Failed to start server:', err)
+    logger.error({ err }, 'Failed to start server')
     process.exit(1)
   })
 }
+
+process.on('uncaughtException',  err => {
+  logger.error({ err }, '[uncaughtException]')
+  process.exit(1)
+})
+process.on('unhandledRejection', err => {
+  logger.error({ err }, '[unhandledRejection]')
+})
 
 export default app

@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import type { JwtPayload } from '@hcm/shared'
+import { env } from '../config/env'
 import { AppError } from './errorHandler'
 
 declare global {
@@ -18,7 +19,7 @@ export function authenticate(req: Request, _res: Response, next: NextFunction): 
   }
 
   const token  = header.slice(7)
-  const secret = process.env.JWT_SECRET
+  const secret = env.JWT_SECRET
 
   if (!secret || secret === 'CHANGE_ME_IN_PRODUCTION_USE_32_CHAR_MIN') {
     return next(new AppError(500, 'JWT_SECRET is not configured'))

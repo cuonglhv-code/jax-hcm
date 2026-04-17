@@ -40,8 +40,10 @@ class S3Storage implements StorageProvider {
   getUrl(_p: string): string     { throw new NotImplementedError('S3') }
 }
 
-const provider = process.env.FILE_STORAGE_PROVIDER ?? 'local'
-const basePath  = process.env.FILE_STORAGE_PATH    ?? './uploads'
+import { env } from '../config/env'
+
+const provider = env.FILE_STORAGE_PROVIDER
+const basePath = env.FILE_STORAGE_PATH
 
 export const storage: StorageProvider =
   provider === 's3' ? new S3Storage() : new LocalStorage(basePath)

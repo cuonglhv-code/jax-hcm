@@ -52,10 +52,10 @@ export default function CandidateDetailPage() {
                   <Badge variant="info">{app.stage}</Badge>
                   {app.offer_id && (
                     <Button 
-                      size="xs" 
+                      size="sm" 
                       variant="secondary" 
                       onClick={() => setPreviewOfferId(app.offer_id)}
-                      icon={<FileText className="w-3 h-3" />}
+                      leftIcon={<FileText className="w-3 h-3" />}
                     >
                       Offer Letter
                     </Button>

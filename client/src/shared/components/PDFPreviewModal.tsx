@@ -74,7 +74,7 @@ export function PDFPreviewModal({ isOpen, onClose, title, pdfUrl, filename }: PD
       isOpen={isOpen}
       onClose={onClose}
       title={title}
-      size="4xl"
+      size="lg"
     >
       <div className="flex flex-col h-[70vh]">
         <div className="flex-1 bg-surface-muted rounded border border-border flex items-center justify-center overflow-hidden relative">
@@ -105,7 +105,7 @@ export function PDFPreviewModal({ isOpen, onClose, title, pdfUrl, filename }: PD
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             Close
           </Button>
           <Button 

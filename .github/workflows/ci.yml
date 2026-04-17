@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install root deps
+        run: npm ci
+      - name: Install server deps
+        run: cd server && npm ci
+      - name: Install client deps
+        run: cd client && npm ci
+      - name: Install shared deps
+        run: cd shared && npm ci
+      - name: TypeScript check (server)
+        run: cd server && npx tsc --noEmit
+      - name: TypeScript check (client)
+        run: cd client && npx tsc --noEmit
+
+  server-tests:
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: hcm_user
+          POSTGRES_PASSWORD: hcm_password
+          POSTGRES_DB: jax_hcm_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://hcm_user:hcm_password@localhost:5432/jax_hcm_test
+      NODE_ENV: test
+      JWT_SECRET: ci-test-secret-32-chars-minimum-ok
+      JWT_EXPIRES_IN: 15m
+      BCRYPT_ROUNDS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: cd shared && npm ci && npm run build
+      - run: cd server && npm ci
+      - name: Run migrations
+        run: cd server && npm run migrate
+      - name: Run seed
+        run: cd server && npm run seed
+      - name: Run tests
+        run: cd server && npm test -- --coverage --forceExit
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-coverage
+          path: server/coverage/
+
+  client-tests:
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: cd shared && npm ci && npm run build
+      - run: cd client && npm ci
+      - name: Run tests
+        run: cd client && npm test -- --coverage
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-coverage
+          path: client/coverage/
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [server-tests, client-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t jax-hcm:ci .
+      - name: Smoke test container
+        run: |
+          docker run -d --name test_app \
+            -e DATABASE_URL="postgresql://dummy:dummy@localhost/dummy" \
+            -e JWT_SECRET="ci-test-secret-32-chars-minimum-ok" \
+            -e NODE_ENV="production" \
+            -p 4000:4000 jax-hcm:ci || true
+          sleep 5
+          docker logs test_app || true

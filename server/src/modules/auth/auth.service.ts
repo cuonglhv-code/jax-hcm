@@ -26,7 +26,7 @@ export async function storeRefreshToken(userId: string, hash: string): Promise<v
   await db('refresh_tokens').insert({
     user_id: userId,
     token_hash: hash,
-    expires_at: db.raw("NOW() + INTERVAL '7 days'"),
+    expires_at: db.raw(`NOW() + INTERVAL '${env.REFRESH_TOKEN_EXPIRES_DAYS} days'`),
   })
 }
 
@@ -55,8 +55,8 @@ export async function revokeRefreshToken(raw: string): Promise<void> {
 
 export async function login(email: string, pass: string): Promise<{ user: AuthUser; accessToken: string; refreshToken: string }> {
   const user = await db('users')
+    .leftJoin('employees', 'users.id', 'employees.user_id')
     .select('users.*', 'employees.first_name', 'employees.last_name', 'employees.id as employee_id')
-    .leftJoin('employees', 'employees.user_id', 'users.id')
     .where({ 'users.email': email.toLowerCase(), 'users.is_active': true, 'users.deleted_at': null })
     .first()
 

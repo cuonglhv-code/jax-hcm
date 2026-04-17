@@ -2,6 +2,8 @@ import type { Request, Response, NextFunction } from 'express'
 import { ZodError } from 'zod'
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 import { error as envelope } from '../utils/responseEnvelope'
+import { env } from '../config/env'
+import { logger } from '../utils/logger'
 
 export class AppError extends Error {
   constructor(public statusCode: number, message: string) {
@@ -40,8 +42,8 @@ export function errorHandler(
     return
   }
 
-  const isDev = process.env.NODE_ENV === 'development'
-  console.error('[Unhandled Error]', err)
+  const isDev = env.NODE_ENV === 'development'
+  logger.error({ err }, 'Unhandled error')
   res.status(500).json(
     envelope(isDev ? err.message : 'Internal server error')
   )

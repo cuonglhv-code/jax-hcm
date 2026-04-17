@@ -31,7 +31,7 @@ describe('Notifications API', () => {
         password_hash: 'hi' 
       }).returning('*').then(r => r[0]);
       
-      const token = getTestToken('employee', user.id);
+      const token = getTestToken('employee', { userId: user.id });
       const res = await request(app).get('/api/notifications').set('Authorization', token);
       expect(res.status).toBe(200);
       expect(res.body.data).toEqual([]);
@@ -55,7 +55,7 @@ describe('Notifications API', () => {
     });
 
     it('marks notification as read', async () => {
-      const token = getTestToken('employee', userId);
+      const token = getTestToken('employee', { userId });
       const res = await request(app).patch(`/api/notifications/${notifId}/read`).set('Authorization', token);
       expect(res.status).toBe(200);
       
@@ -64,7 +64,7 @@ describe('Notifications API', () => {
     });
 
     it('returns 404 if notification belongs to different user', async () => {
-      const token = getTestToken('employee', uuidv4());
+      const token = getTestToken('employee', { userId: uuidv4() });
       const res = await request(app).patch(`/api/notifications/${notifId}/read`).set('Authorization', token);
       expect(res.status).toBe(404);
     });
@@ -83,7 +83,7 @@ describe('Notifications API', () => {
     });
 
     it('marks all user notifications as read', async () => {
-      const token = getTestToken('employee', userId);
+      const token = getTestToken('employee', { userId });
       const res = await request(app).patch('/api/notifications/read-all').set('Authorization', token);
       expect(res.status).toBe(200);
 
@@ -115,7 +115,7 @@ describe('Notifications API', () => {
         .set('Authorization', mgrToken)
         .send({ status: 'approved' });
 
-      const empToken = getTestToken('employee', u.id);
+      const empToken = getTestToken('employee', { userId: u.id });
       const res = await request(app).get('/api/notifications').set('Authorization', empToken);
       
       expect(res.status).toBe(200);
