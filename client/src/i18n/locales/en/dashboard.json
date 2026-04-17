@@ -1,0 +1,19 @@
+{
+  "title": "Dashboard",
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  },
+  "kpi": {
+    "totalEmployees": "Total Employees",
+    "activeEmployees": "Active Employees",
+    "pendingLeave": "Pending Leave",
+    "openPositions": "Open Positions",
+    "upcomingAppraisals": "Upcoming Appraisals",
+    "thisMonthPayroll": "This Month Payroll"
+  },
+  "quickLinks": "Quick Links",
+  "recentActivity": "Recent Activity",
+  "noActivity": "No recent activity"
+}

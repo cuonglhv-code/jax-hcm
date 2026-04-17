@@ -1,0 +1,61 @@
+{
+  "title": "Employee Management",
+  "list": {
+    "title": "Employee List",
+    "searchPlaceholder": "Search by name or email...",
+    "addEmployee": "Add Employee",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "department": "Department",
+      "jobTitle": "Job Title",
+      "role": "Role",
+      "startDate": "Start Date",
+      "status": "Status",
+      "actions": "Actions"
+    }
+  },
+  "profile": {
+    "title": "Employee Profile",
+    "tabs": {
+      "overview": "Overview",
+      "documents": "Documents",
+      "audit": "History"
+    },
+    "personalInfo": "Personal Information",
+    "employmentInfo": "Employment Information",
+    "contactInfo": "Contact Information",
+    "salary": "Salary",
+    "hireDate": "Hire Date",
+    "department": "Department",
+    "manager": "Line Manager",
+    "jobTitle": "Job Title"
+  },
+  "form": {
+    "createTitle": "Add New Employee",
+    "editTitle": "Edit Employee",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "dateOfBirth": "Date of Birth",
+    "hireDate": "Hire Date",
+    "department": "Department",
+    "jobTitle": "Job Title",
+    "role": "Role",
+    "baseSalary": "Base Salary",
+    "gender": "Gender",
+    "address": "Address",
+    "nationalId": "National ID"
+  },
+  "departments": {
+    "title": "Departments",
+    "add": "Add Department",
+    "name": "Department Name",
+    "manager": "Department Head",
+    "headcount": "Headcount"
+  },
+  "orgChart": {
+    "title": "Org Chart"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "title": "Đào tạo & Học tập",
+  "catalogue": {
+    "title": "Danh mục khóa học",
+    "enrol": "Đăng ký",
+    "enrolled": "Đã đăng ký",
+    "completed": "Đã hoàn thành",
+    "duration": "Thời lượng",
+    "provider": "Đơn vị đào tạo",
+    "category": "Danh mục"
+  },
+  "myLearning": {
+    "title": "Học tập của tôi",
+    "inProgress": "Đang học",
+    "completed": "Đã hoàn thành",
+    "mandatory": "Bắt buộc",
+    "certificate": "Chứng chỉ",
+    "downloadCertificate": "Tải chứng chỉ"
+  },
+  "plan": {
+    "title": "Kế hoạch học tập",
+    "add": "Thêm khóa học"
+  },
+  "mandatory": {
+    "title": "Đào tạo bắt buộc",
+    "overdue": "Quá hạn",
+    "dueDate": "Hạn hoàn thành",
+    "compliance": "Tuân thủ"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "title": "Notifications",
+  "markAllRead": "Mark all as read",
+  "noNotifications": "No new notifications",
+  "types": {
+    "leave_approved": "Leave request approved",
+    "leave_rejected": "Leave request rejected",
+    "leave_request": "New leave request",
+    "payslip_ready": "Payslip ready",
+    "appraisal_due": "Appraisal due soon",
+    "course_assigned": "Course assigned"
+  }
+}

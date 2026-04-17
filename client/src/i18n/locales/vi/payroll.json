@@ -1,0 +1,43 @@
+{
+  "title": "Bảng lương",
+  "dashboard": {
+    "title": "Tổng quan bảng lương",
+    "totalPayroll": "Tổng chi phí lương",
+    "processedRuns": "Kỳ đã xử lý",
+    "pendingRuns": "Kỳ đang chờ",
+    "avgSalary": "Lương trung bình"
+  },
+  "runs": {
+    "title": "Kỳ tính lương",
+    "create": "Tạo kỳ mới",
+    "period": "Kỳ lương",
+    "status": "Trạng thái",
+    "totalAmount": "Tổng tiền",
+    "employeeCount": "Số nhân viên",
+    "statuses": {
+      "draft": "Nháp",
+      "processing": "Đang xử lý",
+      "review": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "paid": "Đã trả"
+    }
+  },
+  "payslip": {
+    "title": "Phiếu lương",
+    "basicSalary": "Lương cơ bản",
+    "allowances": "Phụ cấp",
+    "deductions": "Khấu trừ",
+    "grossSalary": "Lương gộp",
+    "netSalary": "Lương thực nhận",
+    "tax": "Thuế TNCN",
+    "socialInsurance": "BHXH",
+    "download": "Tải phiếu lương"
+  },
+  "taxRules": {
+    "title": "Quy tắc thuế",
+    "bracket": "Bậc thuế",
+    "rate": "Thuế suất",
+    "minIncome": "Thu nhập tối thiểu",
+    "maxIncome": "Thu nhập tối đa"
+  }
+}

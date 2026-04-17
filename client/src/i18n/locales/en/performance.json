@@ -1,0 +1,32 @@
+{
+  "title": "Performance",
+  "cycles": {
+    "title": "Appraisal Cycles",
+    "create": "Create Cycle",
+    "name": "Cycle Name",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "status": "Status",
+    "activate": "Activate"
+  },
+  "appraisal": {
+    "title": "Appraisal",
+    "selfAssessment": "Self Assessment",
+    "managerAssessment": "Manager Assessment",
+    "rating": "Rating",
+    "comments": "Comments",
+    "submit": "Submit Appraisal"
+  },
+  "goals": {
+    "title": "Goals",
+    "create": "Add Goal",
+    "keyResults": "Key Results",
+    "progress": "Progress",
+    "dueDate": "Due Date"
+  },
+  "dashboard": {
+    "title": "Performance Overview",
+    "byDepartment": "By Department",
+    "distribution": "Rating Distribution"
+  }
+}

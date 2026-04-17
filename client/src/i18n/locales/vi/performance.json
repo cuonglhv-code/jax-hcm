@@ -1,0 +1,32 @@
+{
+  "title": "Đánh giá hiệu suất",
+  "cycles": {
+    "title": "Chu kỳ đánh giá",
+    "create": "Tạo chu kỳ",
+    "name": "Tên chu kỳ",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "status": "Trạng thái",
+    "activate": "Kích hoạt"
+  },
+  "appraisal": {
+    "title": "Bản đánh giá",
+    "selfAssessment": "Tự đánh giá",
+    "managerAssessment": "Đánh giá của quản lý",
+    "rating": "Điểm đánh giá",
+    "comments": "Nhận xét",
+    "submit": "Nộp đánh giá"
+  },
+  "goals": {
+    "title": "Mục tiêu",
+    "create": "Thêm mục tiêu",
+    "keyResults": "Kết quả then chốt",
+    "progress": "Tiến độ",
+    "dueDate": "Hạn hoàn thành"
+  },
+  "dashboard": {
+    "title": "Tổng quan hiệu suất",
+    "byDepartment": "Theo phòng ban",
+    "distribution": "Phân bố đánh giá"
+  }
+}

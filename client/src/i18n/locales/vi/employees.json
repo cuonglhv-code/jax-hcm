@@ -1,0 +1,61 @@
+{
+  "title": "Quản lý nhân viên",
+  "list": {
+    "title": "Danh sách nhân viên",
+    "searchPlaceholder": "Tìm theo tên hoặc email...",
+    "addEmployee": "Thêm nhân viên",
+    "columns": {
+      "name": "Họ tên",
+      "email": "Email",
+      "department": "Phòng ban",
+      "jobTitle": "Chức danh",
+      "role": "Vai trò",
+      "startDate": "Ngày vào làm",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    }
+  },
+  "profile": {
+    "title": "Hồ sơ nhân viên",
+    "tabs": {
+      "overview": "Tổng quan",
+      "documents": "Tài liệu",
+      "audit": "Lịch sử"
+    },
+    "personalInfo": "Thông tin cá nhân",
+    "employmentInfo": "Thông tin công việc",
+    "contactInfo": "Thông tin liên hệ",
+    "salary": "Mức lương",
+    "hireDate": "Ngày vào làm",
+    "department": "Phòng ban",
+    "manager": "Quản lý trực tiếp",
+    "jobTitle": "Chức danh"
+  },
+  "form": {
+    "createTitle": "Thêm nhân viên mới",
+    "editTitle": "Chỉnh sửa nhân viên",
+    "firstName": "Họ",
+    "lastName": "Tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "dateOfBirth": "Ngày sinh",
+    "hireDate": "Ngày vào làm",
+    "department": "Phòng ban",
+    "jobTitle": "Chức danh",
+    "role": "Vai trò",
+    "baseSalary": "Lương cơ bản",
+    "gender": "Giới tính",
+    "address": "Địa chỉ",
+    "nationalId": "CMND/CCCD"
+  },
+  "departments": {
+    "title": "Phòng ban",
+    "add": "Thêm phòng ban",
+    "name": "Tên phòng ban",
+    "manager": "Trưởng phòng",
+    "headcount": "Số nhân viên"
+  },
+  "orgChart": {
+    "title": "Sơ đồ tổ chức"
+  }
+}

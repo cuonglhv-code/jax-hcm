@@ -21,14 +21,15 @@
     }
   },
   "include": [
-    "src/main.tsx", 
-    "src/shared/**/*", 
-    "src/layouts/**/*", 
-    "src/router/**/*", 
-    "src/contexts/**/*", 
-    "src/services/**/*", 
+    "src/main.tsx",
+    "src/shared/**/*",
+    "src/layouts/**/*",
+    "src/router/**/*",
+    "src/contexts/**/*",
+    "src/services/**/*",
     "src/pages/**/*",
-    "src/test/**/*"
+    "src/test/**/*",
+    "src/i18n/**/*"
   ],
   "exclude": ["node_modules"]
 }

@@ -1,0 +1,37 @@
+{
+  "title": "Leave",
+  "request": {
+    "title": "Leave Request",
+    "create": "Create Request",
+    "leaveType": "Leave Type",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "workingDays": "Working Days",
+    "reason": "Reason",
+    "status": "Status",
+    "balance": "Days Remaining",
+    "used": "Used",
+    "entitled": "Entitled Days"
+  },
+  "calendar": {
+    "title": "Leave Calendar",
+    "publicHolidays": "Public Holidays",
+    "teamLeave": "Team Leave"
+  },
+  "admin": {
+    "title": "Leave Management",
+    "tabs": {
+      "pending": "Pending",
+      "entitlements": "Entitlements",
+      "types": "Leave Types",
+      "holidays": "Holidays"
+    }
+  },
+  "attendance": {
+    "title": "Attendance",
+    "clockIn": "Clock In",
+    "clockOut": "Clock Out",
+    "totalHours": "Total Hours",
+    "overtime": "Overtime"
+  }
+}

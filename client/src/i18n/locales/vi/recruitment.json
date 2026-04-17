@@ -1,0 +1,39 @@
+{
+  "title": "Tuyển dụng",
+  "requisitions": {
+    "title": "Yêu cầu tuyển dụng",
+    "create": "Tạo yêu cầu",
+    "position": "Vị trí",
+    "department": "Phòng ban",
+    "headcount": "Số lượng",
+    "status": "Trạng thái",
+    "statuses": {
+      "open": "Đang tuyển",
+      "closed": "Đã đóng",
+      "draft": "Nháp"
+    }
+  },
+  "pipeline": {
+    "title": "Ống tuyển dụng",
+    "stages": {
+      "applied": "Đã ứng tuyển",
+      "screening": "Sàng lọc",
+      "interview": "Phỏng vấn",
+      "offer": "Đề nghị",
+      "hired": "Đã nhận"
+    }
+  },
+  "candidate": {
+    "title": "Ứng viên",
+    "name": "Họ tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "resumeUrl": "CV",
+    "source": "Nguồn"
+  },
+  "onboarding": {
+    "title": "Onboarding",
+    "tasks": "Công việc onboarding",
+    "progress": "Tiến độ"
+  }
+}

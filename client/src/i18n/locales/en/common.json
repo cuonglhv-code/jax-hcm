@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Jaxtina HCM",
+    "tagline": "Human Capital Management"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "employees": "Employees",
+    "payroll": "Payroll",
+    "leave": "Leave",
+    "recruitment": "Recruitment",
+    "performance": "Performance",
+    "learning": "Learning",
+    "admin": "Admin",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Sign out"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "view": "View",
+    "download": "Download",
+    "upload": "Upload",
+    "approve": "Approve",
+    "reject": "Reject",
+    "refresh": "Refresh"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "draft": "Draft",
+    "published": "Published"
+  },
+  "table": {
+    "noData": "No data available",
+    "loading": "Loading...",
+    "showing": "Showing {{from}}-{{to}} of {{total}} results",
+    "rowsPerPage": "Rows per page"
+  },
+  "pagination": {
+    "first": "First",
+    "last": "Last",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "form": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "minLength": "Minimum {{min}} characters",
+    "maxLength": "Maximum {{max}} characters"
+  },
+  "confirm": {
+    "deleteTitle": "Confirm Delete",
+    "deleteMessage": "Are you sure you want to delete this item? This action cannot be undone.",
+    "yes": "Yes, delete",
+    "no": "No"
+  },
+  "roles": {
+    "super_admin": "Super Admin",
+    "hr_manager": "HR Manager",
+    "line_manager": "Line Manager",
+    "employee": "Employee"
+  },
+  "language": {
+    "toggle": "VI",
+    "current": "English"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Not found",
+    "forbidden": "You do not have permission to access this",
+    "serverError": "Server error"
+  }
+}

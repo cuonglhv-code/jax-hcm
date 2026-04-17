@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './shared/components/Toast'
 import AppRouter from './router/AppRouter'
 import './styles/globals.css'
+import './i18n'
 
 const queryClient = new QueryClient({
   defaultOptions: {

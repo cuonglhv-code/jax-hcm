@@ -1,0 +1,21 @@
+{
+  "title": "Quản trị hệ thống",
+  "stats": {
+    "title": "Thống kê hệ thống",
+    "totalUsers": "Tổng người dùng",
+    "activeUsers": "Người dùng hoạt động",
+    "totalRequests": "Tổng yêu cầu"
+  },
+  "users": {
+    "title": "Quản lý người dùng",
+    "changeRole": "Thay đổi vai trò",
+    "deactivate": "Vô hiệu hóa"
+  },
+  "activityLog": {
+    "title": "Nhật ký hoạt động",
+    "action": "Hành động",
+    "entity": "Đối tượng",
+    "performer": "Người thực hiện",
+    "timestamp": "Thời gian"
+  }
+}

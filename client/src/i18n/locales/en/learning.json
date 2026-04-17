@@ -1,0 +1,30 @@
+{
+  "title": "Learning & Development",
+  "catalogue": {
+    "title": "Course Catalogue",
+    "enrol": "Enrol",
+    "enrolled": "Enrolled",
+    "completed": "Completed",
+    "duration": "Duration",
+    "provider": "Provider",
+    "category": "Category"
+  },
+  "myLearning": {
+    "title": "My Learning",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "mandatory": "Mandatory",
+    "certificate": "Certificate",
+    "downloadCertificate": "Download Certificate"
+  },
+  "plan": {
+    "title": "Learning Plan",
+    "add": "Add Course"
+  },
+  "mandatory": {
+    "title": "Mandatory Training",
+    "overdue": "Overdue",
+    "dueDate": "Due Date",
+    "compliance": "Compliance"
+  }
+}

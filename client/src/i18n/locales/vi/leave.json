@@ -1,0 +1,37 @@
+{
+  "title": "Nghỉ phép",
+  "request": {
+    "title": "Yêu cầu nghỉ phép",
+    "create": "Tạo yêu cầu",
+    "leaveType": "Loại nghỉ phép",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "workingDays": "Số ngày làm việc",
+    "reason": "Lý do",
+    "status": "Trạng thái",
+    "balance": "Số ngày còn lại",
+    "used": "Đã sử dụng",
+    "entitled": "Tổng ngày phép"
+  },
+  "calendar": {
+    "title": "Lịch nghỉ phép",
+    "publicHolidays": "Ngày lễ",
+    "teamLeave": "Nghỉ phép nhóm"
+  },
+  "admin": {
+    "title": "Quản lý nghỉ phép",
+    "tabs": {
+      "pending": "Chờ duyệt",
+      "entitlements": "Ngày phép",
+      "types": "Loại nghỉ",
+      "holidays": "Ngày lễ"
+    }
+  },
+  "attendance": {
+    "title": "Chấm công",
+    "clockIn": "Vào ca",
+    "clockOut": "Ra ca",
+    "totalHours": "Tổng giờ làm",
+    "overtime": "Tăng ca"
+  }
+}

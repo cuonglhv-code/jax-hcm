@@ -1,0 +1,13 @@
+{
+  "title": "Thông báo",
+  "markAllRead": "Đánh dấu tất cả đã đọc",
+  "noNotifications": "Không có thông báo mới",
+  "types": {
+    "leave_approved": "Yêu cầu nghỉ phép được duyệt",
+    "leave_rejected": "Yêu cầu nghỉ phép bị từ chối",
+    "leave_request": "Yêu cầu nghỉ phép mới",
+    "payslip_ready": "Phiếu lương đã sẵn sàng",
+    "appraisal_due": "Đánh giá sắp đến hạn",
+    "course_assigned": "Khóa học được phân công"
+  }
+}

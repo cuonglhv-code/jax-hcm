@@ -1,0 +1,21 @@
+{
+  "title": "System Administration",
+  "stats": {
+    "title": "System Statistics",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "totalRequests": "Total Requests"
+  },
+  "users": {
+    "title": "User Management",
+    "changeRole": "Change Role",
+    "deactivate": "Deactivate"
+  },
+  "activityLog": {
+    "title": "Activity Log",
+    "action": "Action",
+    "entity": "Entity",
+    "performer": "Performed By",
+    "timestamp": "Timestamp"
+  }
+}

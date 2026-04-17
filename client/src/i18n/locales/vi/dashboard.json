@@ -1,0 +1,19 @@
+{
+  "title": "Tổng quan",
+  "greeting": {
+    "morning": "Chào buổi sáng",
+    "afternoon": "Chào buổi chiều",
+    "evening": "Chào buổi tối"
+  },
+  "kpi": {
+    "totalEmployees": "Tổng nhân viên",
+    "activeEmployees": "Đang làm việc",
+    "pendingLeave": "Yêu cầu nghỉ phép",
+    "openPositions": "Vị trí tuyển dụng",
+    "upcomingAppraisals": "Đánh giá sắp tới",
+    "thisMonthPayroll": "Bảng lương tháng này"
+  },
+  "quickLinks": "Truy cập nhanh",
+  "recentActivity": "Hoạt động gần đây",
+  "noActivity": "Chưa có hoạt động nào"
+}

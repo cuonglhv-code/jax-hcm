@@ -1,24 +1,23 @@
-import React from 'react';
-import { Search, Bell, Sun, Moon } from 'lucide-react';
-import { Avatar } from './Avatar';
-import { useAuth } from '../contexts/AuthContext';
+import React from 'react'
+import { Search, Bell, Sun, Moon } from 'lucide-react'
+import { Avatar } from './Avatar'
+import { LanguageToggle } from './LanguageToggle'
+import { useAuth } from '../contexts/AuthContext'
 
 interface TopbarProps {
-  title?: string;
+  title?: string
 }
 
 export function Topbar({ title }: TopbarProps) {
-  const { user } = useAuth();
-  const [dark, setDark] = React.useState(() =>
-    document.documentElement.classList.contains('dark'),
-  );
+  const { user } = useAuth()
+  const [dark, setDark] = React.useState(() => document.documentElement.classList.contains('dark'))
 
   const toggleDark = () => {
-    const isDark = !dark;
-    setDark(isDark);
-    document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('hcm_theme', isDark ? 'dark' : 'light');
-  };
+    const isDark = !dark
+    setDark(isDark)
+    document.documentElement.classList.toggle('dark', isDark)
+    localStorage.setItem('hcm_theme', isDark ? 'dark' : 'light')
+  }
 
   return (
     <header className="flex items-center gap-4 h-16 px-6 bg-white dark:bg-surface-dark-card border-b border-gray-100 dark:border-surface-dark-border shrink-0">
@@ -38,6 +37,8 @@ export function Topbar({ title }: TopbarProps) {
 
       {/* Actions */}
       <div className="flex items-center gap-2">
+        <LanguageToggle />
+
         <button
           onClick={toggleDark}
           className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -64,5 +65,5 @@ export function Topbar({ title }: TopbarProps) {
         )}
       </div>
     </header>
-  );
+  )
 }

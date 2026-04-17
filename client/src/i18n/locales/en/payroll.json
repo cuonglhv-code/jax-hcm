@@ -1,0 +1,43 @@
+{
+  "title": "Payroll",
+  "dashboard": {
+    "title": "Payroll Overview",
+    "totalPayroll": "Total Payroll Cost",
+    "processedRuns": "Processed Runs",
+    "pendingRuns": "Pending Runs",
+    "avgSalary": "Average Salary"
+  },
+  "runs": {
+    "title": "Payroll Runs",
+    "create": "Create New Run",
+    "period": "Pay Period",
+    "status": "Status",
+    "totalAmount": "Total Amount",
+    "employeeCount": "Employee Count",
+    "statuses": {
+      "draft": "Draft",
+      "processing": "Processing",
+      "review": "Under Review",
+      "approved": "Approved",
+      "paid": "Paid"
+    }
+  },
+  "payslip": {
+    "title": "Payslip",
+    "basicSalary": "Basic Salary",
+    "allowances": "Allowances",
+    "deductions": "Deductions",
+    "grossSalary": "Gross Salary",
+    "netSalary": "Net Salary",
+    "tax": "Income Tax",
+    "socialInsurance": "Social Insurance",
+    "download": "Download Payslip"
+  },
+  "taxRules": {
+    "title": "Tax Rules",
+    "bracket": "Tax Bracket",
+    "rate": "Tax Rate",
+    "minIncome": "Min Income",
+    "maxIncome": "Max Income"
+  }
+}

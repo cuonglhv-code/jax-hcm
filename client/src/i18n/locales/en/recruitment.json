@@ -1,0 +1,39 @@
+{
+  "title": "Recruitment",
+  "requisitions": {
+    "title": "Job Requisitions",
+    "create": "Create Requisition",
+    "position": "Position",
+    "department": "Department",
+    "headcount": "Headcount",
+    "status": "Status",
+    "statuses": {
+      "open": "Open",
+      "closed": "Closed",
+      "draft": "Draft"
+    }
+  },
+  "pipeline": {
+    "title": "Recruitment Pipeline",
+    "stages": {
+      "applied": "Applied",
+      "screening": "Screening",
+      "interview": "Interview",
+      "offer": "Offer",
+      "hired": "Hired"
+    }
+  },
+  "candidate": {
+    "title": "Candidate",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "resumeUrl": "Resume",
+    "source": "Source"
+  },
+  "onboarding": {
+    "title": "Onboarding",
+    "tasks": "Onboarding Tasks",
+    "progress": "Progress"
+  }
+}
