@@ -8,6 +8,7 @@ import { Badge } from '@/shared/components/Badge'
 import { Button } from '@/shared/components/Button'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { useToast } from '@/shared/components/Toast'
+import { PDFPreviewModal } from '@/shared/components/PDFPreviewModal'
 import { format } from 'date-fns'
 import { GraduationCap } from 'lucide-react'
 
@@ -20,6 +21,9 @@ export default function MyLearningPage() {
   const navigate = useNavigate()
   const { toast } = useToast()
   const [activeTab, setActiveTab] = useState('in_progress')
+  
+  const [previewCertId, setPreviewCertId] = useState<string | null>(null)
+  const [previewCertTitle, setPreviewCertTitle] = useState<string>('')
 
   const { data: inProgressData } = useEnrolmentsByEmployee(user?.id, 'in_progress')
   const { data: completedData } = useEnrolmentsByEmployee(user?.id, 'completed')
@@ -73,7 +77,7 @@ export default function MyLearningPage() {
                     <div className="text-xs text-text-muted">Completed {e.completedAt ? format(new Date(e.completedAt), 'dd MMM yyyy') : '—'}</div>
                   </div>
                   {e.certificateId && (
-                    <Button size="sm" variant="secondary" onClick={() => navigate(`/learning/certificates/${e.certificateId}`)}>
+                    <Button size="sm" variant="secondary" onClick={() => { setPreviewCertId(e.certificateId); setPreviewCertTitle(e.course?.title || 'Course'); }}>
                       View Certificate
                     </Button>
                   )}
@@ -106,6 +110,15 @@ export default function MyLearningPage() {
           </div>
         )}
       </Tabs>
+
+      <PDFPreviewModal
+        isOpen={!!previewCertId}
+        onClose={() => setPreviewCertId(null)}
+        title={`Certificate - ${previewCertTitle}`}
+        pdfUrl={previewCertId ? `/learning/certificates/${previewCertId}/pdf` : null}
+        filename={`certificate-${previewCertTitle.replace(/\s+/g, '-').toLowerCase()}.pdf`}
+      />
     </div>
   )
 }
+

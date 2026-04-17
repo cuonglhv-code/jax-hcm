@@ -246,4 +246,60 @@ export const payrollService = {
     const data = await query.orderBy('payroll_runs.period_start', 'desc').limit(limit).offset(offset);
     return { data, meta: buildMeta(Number(count), page, limit) };
   },
+
+  async getPayslipById(id: string) {
+    const payslip = await db('payslips')
+      .where('payslips.id', id)
+      .join('employees', 'payslips.employee_id', 'employees.id')
+      .join('payroll_runs', 'payslips.payroll_run_id', 'payroll_runs.id')
+      .leftJoin('job_titles', 'employees.job_title_id', 'job_titles.id')
+      .leftJoin('departments', 'employees.department_id', 'departments.id')
+      .select(
+        'payslips.*',
+        'employees.first_name', 'employees.last_name', 'employees.employee_number',
+        'payroll_runs.period_start', 'payroll_runs.period_end', 'payroll_runs.name as run_name', 'payroll_runs.paid_at',
+        'job_titles.title as job_title',
+        'departments.name as department',
+      )
+      .first();
+    if (!payslip) throw new AppError(404, 'Payslip not found');
+    return payslip;
+  },
+
+  // Tax Rules
+  async listTaxRules(jurisdiction?: string) {
+    const query = db('tax_rules').whereNull('deleted_at').orderBy('min_income', 'asc');
+    if (jurisdiction) query.where({ jurisdiction });
+    return query;
+  },
+
+  async createTaxRule(data: Record<string, unknown>) {
+    const [rule] = await db('tax_rules').insert({
+      id: uuidv4(),
+      jurisdiction: data.jurisdiction || 'GB',
+      min_income: data.minIncome,
+      max_income: data.maxIncome ?? null,
+      rate: data.rate,
+      label: data.label ?? '',
+    }).returning('*');
+    return rule;
+  },
+
+  async updateTaxRule(id: string, data: Record<string, unknown>) {
+    const [rule] = await db('tax_rules').where({ id }).update({
+      min_income: data.minIncome,
+      max_income: data.maxIncome ?? null,
+      rate: data.rate,
+      label: data.label,
+      jurisdiction: data.jurisdiction,
+      updated_at: new Date(),
+    }).returning('*');
+    if (!rule) throw new AppError(404, 'Tax rule not found');
+    return rule;
+  },
+
+  async deleteTaxRule(id: string) {
+    await db('tax_rules').where({ id }).update({ deleted_at: new Date() });
+  },
 };
+

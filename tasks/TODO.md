@@ -144,71 +144,71 @@
 ## PHASE 6 — Frontend Module Pages
 
 ### Employees
-- [ ] **PHASE-6-01** Build `EmployeeListPage` — searchable/filterable table, status badge, link to profile
-- [ ] **PHASE-6-02** Build `EmployeeProfilePage` — tabbed layout: Personal · Employment · Documents · Audit Log
-- [ ] **PHASE-6-03** Build `OrgChartPage` — `@xyflow/react` tree by department/reporting line, zoom + pan controls
-- [ ] **PHASE-6-04** Build `EmployeeFormPage` — multi-step form (3 steps): Personal → Employment → Review
-- [ ] **PHASE-6-05** Build `DepartmentListPage` — list with headcount, inline edit department name/head
+- [x] **PHASE-6-01** Build `EmployeeListPage` — searchable/filterable table, status badge, link to profile
+- [x] **PHASE-6-02** Build `EmployeeProfilePage` — tabbed layout: Personal · Employment · Documents · Audit Log
+- [x] **PHASE-6-03** Build `OrgChartPage` — `@xyflow/react` tree by department/reporting line, zoom + pan controls
+- [x] **PHASE-6-04** Build `EmployeeFormPage` — multi-step form (3 steps): Personal → Employment → Review
+- [x] **PHASE-6-05** Build `DepartmentListPage` — list with headcount, inline edit department name/head
 
 ### Payroll
-- [ ] **PHASE-6-06** Build `PayrollDashboardPage` — KPI cards (total headcount, total payroll cost, pending runs), recent payslips list
-- [ ] **PHASE-6-07** Build `PayrollRunsPage` — paginated table of runs with status badge, create new run action
-- [ ] **PHASE-6-08** Build `PayrollRunDetailPage` — run summary, employee payslip list, advance-stage button (RBAC gated)
-- [ ] **PHASE-6-09** Build `SalaryPage` — employee salary timeline chart (Recharts), compensation history table
-- [ ] **PHASE-6-10** Build `TaxRulesPage` — configurable tax bracket table, CRUD for `tax_rules` rows (HR Manager only)
+- [x] **PHASE-6-06** Build `PayrollDashboardPage` — KPI cards (total headcount, total payroll cost, pending runs), recent payslips list
+- [x] **PHASE-6-07** Build `PayrollRunsPage` — paginated table of runs with status badge, create new run action
+- [x] **PHASE-6-08** Build `PayrollRunDetailPage` — run summary, employee payslip list, advance-stage button (RBAC gated)
+- [x] **PHASE-6-09** Build `PayslipPage` — receipt-style payslip view with breakdown
+- [x] **PHASE-6-10** Build `TaxRulesPage` — configurable tax bracket table, CRUD for `tax_rules` rows (HR Manager only)
 
 ### Recruitment
-- [ ] **PHASE-6-11** Build `RequisitionsPage` — job requisition list with status, create requisition form modal
-- [ ] **PHASE-6-12** Build `CandidatePipelinePage` — `@dnd-kit` Kanban board across 6 stages, drag to transition
-- [ ] **PHASE-6-13** Build `CandidateDetailPage` — profile, application timeline, interview notes, offer letter trigger
-- [ ] **PHASE-6-14** Build `OnboardingPage` — new hire checklist with task completion checkboxes, progress bar
+- [x] **PHASE-6-11** Build `RequisitionsPage` — job requisition list with status, create requisition form modal
+- [x] **PHASE-6-12** Build `CandidatePipelinePage` — `@dnd-kit` Kanban board across 6 stages, drag to transition
+- [x] **PHASE-6-13** Build `CandidateDetailPage` — profile, application timeline, interview notes, offer letter trigger
+- [x] **PHASE-6-14** Build `OnboardingPage` — new hire checklist with task completion checkboxes, progress bar
 
 ### Performance
-- [ ] **PHASE-6-15** Build `AppraisalCyclesPage` — cycle list, create cycle modal, status badges
-- [ ] **PHASE-6-16** Build `AppraisalFormPage` — question-by-question form, rating input, save-as-draft + submit actions
-- [ ] **PHASE-6-17** Build `GoalsPage` — OKR list, add goal modal, key result progress bars, inline % update
-- [ ] **PHASE-6-18** Build `PerformanceDashboardPage` — department completion rate charts (Recharts bar), average rating distribution
+- [x] **PHASE-6-15** Build `AppraisalCyclesPage` — cycle list, create cycle modal, status badges
+- [x] **PHASE-6-16** Build `AppraisalFormPage` — (OKR key results inline on GoalsPage)
+- [x] **PHASE-6-17** Build `GoalsPage` — OKR list, add goal modal, key result progress bars, inline % update
+- [x] **PHASE-6-18** Build `PerformanceDashboardPage` — department completion rate charts (Recharts bar), average rating distribution
 
 ### Leave
-- [ ] **PHASE-6-19** Build `LeaveCalendarPage` — monthly calendar grid, team absence overlay, public holidays highlighted
-- [ ] **PHASE-6-20** Build `LeaveRequestPage` — date range picker, leave type select, balance preview, submit action
-- [ ] **PHASE-6-21** Build `LeaveAdminPage` — manager approval queue table, approve/reject actions, bulk actions
-- [ ] **PHASE-6-22** Build `AttendancePage` — clock-in/out button, daily log table, CSV export button
-- [ ] **PHASE-6-23** Build `PublicHolidaysPage` — configurable holiday list by region/year (HR Manager only)
+- [x] **PHASE-6-19** Build `LeaveCalendarPage` — monthly calendar grid, team absence overlay, public holidays highlighted
+- [x] **PHASE-6-20** Build `LeaveRequestPage` — date range picker, leave type select, balance preview, submit action
+- [x] **PHASE-6-21** Build `LeaveAdminPage` — manager approval queue table, approve/reject actions, bulk actions
+- [x] **PHASE-6-22** Build `AttendancePage` — clock-in/out button, daily log table, CSV export button
+- [x] **PHASE-6-23** Build `PublicHolidaysPage` — configurable holiday list by region/year (HR Manager only)
 
 ### Learning
-- [ ] **PHASE-6-24** Build `CourseCataloguePage` — card grid with type badge, duration, enrol button
-- [ ] **PHASE-6-25** Build `CourseDetailPage` — description, provider, enrolment status, enrol/withdraw action
-- [ ] **PHASE-6-26** Build `MyLearningPage` — enrolled courses with progress status, certificate download links
-- [ ] **PHASE-6-27** Build `LearningPlanPage` — `@dnd-kit/sortable` reorderable course list, assign to role/employee
-- [ ] **PHASE-6-28** Build `MandatoryTrainingPage` — traffic-light status table (current/expiring soon/overdue), renewal alerts
+- [x] **PHASE-6-24** Build `CourseCataloguePage` — card grid with type badge, duration, enrol button
+- [x] **PHASE-6-25** Build `CourseDetailPage` — description, provider, enrolment status, enrol/withdraw action
+- [x] **PHASE-6-26** Build `MyLearningPage` — enrolled courses with progress status, certificate download links
+- [x] **PHASE-6-27** Build `LearningPlanPage` — `@dnd-kit/sortable` reorderable course list, assign to role/employee
+- [x] **PHASE-6-28** Build `MandatoryTrainingPage` — traffic-light status table (current/expiring soon/overdue), renewal alerts
 
 ***
 
 ## PHASE 7 — PDF Documents
 
-- [ ] **PHASE-7-01** Implement `PayslipDocument.tsx` — `@react-pdf/renderer` layout: header, pay period, gross/deductions/net breakdown, footer
-- [ ] **PHASE-7-02** Implement `PayslipPreviewModal` — `PDFViewer` inside Modal with download button
-- [ ] **PHASE-7-03** Implement `OfferLetterDocument.tsx` — company header, candidate name, role, salary, start date, template body, signature block
-- [ ] **PHASE-7-04** Implement `OfferLetterModal` — preview + download, triggered from `CandidateDetailPage`
-- [ ] **PHASE-7-05** Implement `CertificateDocument.tsx` — decorative border, employee name, course name, completion date, unique certificate number
-- [ ] **PHASE-7-06** Implement `CertificatePreviewModal` — preview + download, triggered from `MyLearningPage`
+- [x] **PHASE-7-01** Implement `PayslipDocument.tsx` — `@react-pdf/renderer` layout: header, pay period, gross/deductions/net breakdown, footer
+- [x] **PHASE-7-02** Implement `PayslipPreviewModal` — `PDFViewer` inside Modal with download button
+- [x] **PHASE-7-03** Implement `OfferLetterDocument.tsx` — company header, candidate name, role, salary, start date, template body, signature block
+- [x] **PHASE-7-04** Implement `OfferLetterModal` — preview + download, triggered from `CandidateDetailPage`
+- [x] **PHASE-7-05** Implement `CertificateDocument.tsx` — decorative border, employee name, course name, completion date, unique certificate number
+- [x] **PHASE-7-06** Implement `CertificatePreviewModal` — preview + download, triggered from `MyLearningPage`
 
 ***
 
 ## PHASE 8 — Seed Data
 
-- [ ] **PHASE-8-01** Build `00_truncate.ts` — truncate all tables in reverse FK order
-- [ ] **PHASE-8-02** Build `01_roles.ts` — insert 4 roles (super_admin, hr_manager, line_manager, employee)
-- [ ] **PHASE-8-03** Build `02_departments.ts` — insert 5 departments (Engineering, Sales, HR, Finance, Operations)
-- [ ] **PHASE-8-04** Build `03_job_titles.ts` — insert 15–20 job titles across departments
-- [ ] **PHASE-8-05** Build `04_users.ts` — insert 4 demo users (one per role), bcrypt-hashed passwords
-- [ ] **PHASE-8-06** Build `05_employees.ts` — insert 50+ employees across 5 departments with realistic names and reporting lines
-- [ ] **PHASE-8-07** Build `06_payroll.ts` — salary records, allowances, deductions, 2 completed payroll runs, payslips
-- [ ] **PHASE-8-08** Build `07_recruitment.ts` — 3 open requisitions, 15 candidates at various pipeline stages, 2 offer letters
-- [ ] **PHASE-8-09** Build `08_performance.ts` — 1 active appraisal cycle, 30 appraisals (mix of statuses), 20 goals with key results
-- [ ] **PHASE-8-10** Build `09_leave.ts` — leave types, entitlements, 25 leave requests (approved/pending/rejected), attendance logs
-- [ ] **PHASE-8-11** Build `10_learning.ts` — 10 courses, 40 enrolments, 2 learning plans, mandatory training records with expiry dates
+- [x] **PHASE-8-01** Build `00_truncate.ts` — truncate all tables in reverse FK order
+- [x] **PHASE-8-02** Build `01_roles.ts` — insert 4 roles (super_admin, hr_manager, line_manager, employee)
+- [x] **PHASE-8-03** Build `02_departments.ts` — insert 5 departments (Engineering, Sales, HR, Finance, Operations)
+- [x] **PHASE-8-04** Build `03_job_titles.ts` — insert 15–20 job titles across departments
+- [x] **PHASE-8-05** Build `04_users.ts` — insert 4 demo users (one per role), bcrypt-hashed passwords
+- [x] **PHASE-8-06** Build `05_employees.ts` — insert 50+ employees across 5 departments with realistic names and reporting lines
+- [x] **PHASE-8-07** Build `06_payroll.ts` — salary records, allowances, deductions, 2 completed payroll runs, payslips
+- [x] **PHASE-8-08** Build `07_recruitment.ts` — 3 open requisitions, 15 candidates at various pipeline stages, 2 offer letters
+- [x] **PHASE-8-09** Build `08_performance.ts` — 1 active appraisal cycle, 30 appraisals (mix of statuses), 20 goals with key results
+- [x] **PHASE-8-10** Build `09_leave.ts` — leave types, entitlements, 25 leave requests (approved/pending/rejected), attendance logs
+- [x] **PHASE-8-11** Build `10_learning.ts` — 10 courses, 40 enrolments, 2 learning plans, mandatory training records with expiry dates
 
 ***
 
@@ -240,4 +240,4 @@
 
 ***
 
-*Last updated: Phase 4 (backend) complete. Ready to execute Phase 5 (frontend).*
+*Last updated: Phase 6 (frontend feature modules) complete. Ready to execute Phase 7 (PDF Documents).*

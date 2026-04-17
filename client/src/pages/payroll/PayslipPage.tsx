@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePayslip } from '@/hooks/usePayroll'
 import { Button } from '@/shared/components/Button'
 import { Skeleton } from '@/shared/components/Skeleton'
+import { PDFPreviewModal } from '@/shared/components/PDFPreviewModal'
 import { format } from 'date-fns'
 import { ArrowLeft } from 'lucide-react'
 
@@ -11,6 +12,7 @@ export default function PayslipPage() {
   const navigate = useNavigate()
   const { data, isLoading } = usePayslip(id)
   const payslip = data?.data
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   if (isLoading) return <div className="space-y-4"><Skeleton variant="heading" /><Skeleton variant="rect" height="400px" /></div>
   if (!payslip) return <div className="card text-text-muted">Payslip not found.</div>
@@ -77,7 +79,17 @@ export default function PayslipPage() {
           <span className="font-display font-bold text-2xl text-primary">${Number(payslip.netPay || 0).toLocaleString()}</span>
         </div>
 
-        <Button variant="secondary" className="w-full" onClick={() => alert('PDF download coming soon')}>Download PDF</Button>
+        <Button variant="secondary" className="w-full" onClick={() => setPreviewOpen(true)}>Preview & Download PDF</Button>
+        
+        {previewOpen && (
+          <PDFPreviewModal
+            isOpen={previewOpen}
+            onClose={() => setPreviewOpen(false)}
+            title={`Payslip - ${payslip.employee?.firstName} ${payslip.employee?.lastName}`}
+            pdfUrl={`/payroll/payslips/${payslip.id}/pdf`}
+            filename={`payslip-${payslip.employee?.firstName}-${payslip.employee?.lastName}.pdf`}
+          />
+        )}
       </div>
     </div>
   )

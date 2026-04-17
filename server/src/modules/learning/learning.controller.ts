@@ -65,6 +65,10 @@ export const learningController = {
     sendSuccess(res, data);
   }),
 
+  getCertificateDataForPdf: async (certId: string) => {
+    return await learningService.getCertificateDataForPdf(certId);
+  },
+
   // ─── Learning Plans ──────────────────────────────────────────────────
   listPlans: asyncHandler(async (req: Request, res: Response) => {
     const { page, limit } = getPagination(req);

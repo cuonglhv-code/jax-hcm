@@ -25,6 +25,15 @@ router.patch('/enrolments/:id/status', authenticate, validate(schemas.updateEnro
 // Certificates
 router.get('/certificates/:id', authenticate, ctrl.getCertificate);
 
+import { generateCertificatePDF, CertificateData } from './certificate.pdf';
+router.get('/certificates/:id/pdf', asyncHandler(async (req, res) => {
+  const data = await ctrl.getCertificateDataForPdf(req.params.id);
+  const buffer = await generateCertificatePDF(data);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="certificate-${req.params.id}.pdf"`);
+  res.send(buffer);
+}));
+
 // Learning Plans
 router.get('/plans', authenticate, paginate, ctrl.listPlans);
 router.post('/plans', authenticate, authorize(ROLES.HR_MANAGER), validate(schemas.createPlanSchema), ctrl.createPlan);

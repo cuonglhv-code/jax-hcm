@@ -4,6 +4,7 @@ import { authorize } from '../../middleware/authorize';
 import { validate } from '../../middleware/validate';
 import { asyncHandler, sendSuccess } from '../../utils/response';
 import { payrollService } from './payroll.service';
+import { generatePayslipPDF } from './payslip.pdf';
 import { z } from 'zod';
 
 export const payrollRouter = Router();
@@ -57,9 +58,8 @@ payrollRouter.get('/employees/:id/compensation-history', authorize('hr_manager',
   }),
 );
 
-payrollRouter.get('/employees/:id/payslips', 
+payrollRouter.get('/employees/:id/payslips',
   asyncHandler(async (req, res) => {
-    // Employees can view own payslips
     if (req.user!.role === 'employee' && req.user!.employeeId !== req.params.id) {
       res.status(403).json({ success: false, data: null, error: 'Forbidden' });
       return;
@@ -86,6 +86,35 @@ payrollRouter.post('/employees/:id/deductions', authorize('hr_manager', 'super_a
   }),
 );
 
+// Tax Rules
+payrollRouter.get('/tax-rules', authorize('hr_manager', 'super_admin'),
+  asyncHandler(async (req, res) => {
+    const data = await payrollService.listTaxRules(req.query.jurisdiction as string | undefined);
+    sendSuccess(res, data);
+  }),
+);
+
+payrollRouter.post('/tax-rules', authorize('hr_manager', 'super_admin'),
+  asyncHandler(async (req, res) => {
+    const data = await payrollService.createTaxRule(req.body);
+    sendSuccess(res, data, 201);
+  }),
+);
+
+payrollRouter.put('/tax-rules/:id', authorize('hr_manager', 'super_admin'),
+  asyncHandler(async (req, res) => {
+    const data = await payrollService.updateTaxRule(req.params.id, req.body);
+    sendSuccess(res, data);
+  }),
+);
+
+payrollRouter.delete('/tax-rules/:id', authorize('hr_manager', 'super_admin'),
+  asyncHandler(async (req, res) => {
+    await payrollService.deleteTaxRule(req.params.id);
+    sendSuccess(res, null, 204);
+  }),
+);
+
 // Payroll Runs
 payrollRouter.get('/runs', authorize('hr_manager', 'super_admin'),
   asyncHandler(async (req, res) => {
@@ -105,8 +134,7 @@ payrollRouter.post('/runs', authorize('hr_manager', 'super_admin'),
 payrollRouter.put('/runs/:id/status', authorize('hr_manager', 'super_admin'),
   validate(statusSchema),
   asyncHandler(async (req, res) => {
-    const data = req.body;
-    const run = await payrollService.advanceRunStatus(req.params.id, data.status, req.user as unknown as import('@hcm/shared').AuthUser);
+    const run = await payrollService.advanceRunStatus(req.params.id, req.body.status, req.user as unknown as import('@hcm/shared').AuthUser);
     sendSuccess(res, run);
   }),
 );
@@ -115,5 +143,24 @@ payrollRouter.get('/runs/:runId/payslips/:employeeId',
   asyncHandler(async (req, res) => {
     const data = await payrollService.getPayslip(req.params.runId, req.params.employeeId);
     sendSuccess(res, data);
+  }),
+);
+
+// Payslips by ID
+payrollRouter.get('/payslips/:id',
+  asyncHandler(async (req, res) => {
+    const data = await payrollService.getPayslipById(req.params.id);
+    sendSuccess(res, data);
+  }),
+);
+
+// PDF Download — PHASE-7-02/03
+payrollRouter.get('/payslips/:id/pdf',
+  asyncHandler(async (req, res) => {
+    const payslip = await payrollService.getPayslipById(req.params.id);
+    const buffer = await generatePayslipPDF(payslip as any);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="payslip-${req.params.id}.pdf"`);
+    res.send(buffer);
   }),
 );

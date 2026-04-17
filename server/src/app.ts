@@ -45,6 +45,15 @@ app.use('/api/performance',  performanceRouter)
 app.use('/api/leave',        leaveRouter)
 app.use('/api/learning',     learningRouter)
 
+// Additional API Routes
+import { searchRouter }       from './modules/search/search.routes'
+import { notificationRouter } from './modules/notifications/notification.routes'
+import { adminRouter }        from './modules/admin/admin.routes'
+
+app.use('/api/search',        searchRouter)
+app.use('/api/notifications', notificationRouter)
+app.use('/api/admin',         adminRouter)
+
 // 404
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: 'Route not found' })

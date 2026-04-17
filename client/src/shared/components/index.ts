@@ -15,3 +15,4 @@ export * from './FileUpload'
 export * from './ConfirmDialog'
 export * from './Toast'
 export * from './KpiCard'
+export * from './PDFPreviewModal';

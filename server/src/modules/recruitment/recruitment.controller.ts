@@ -110,6 +110,10 @@ export const recruitmentController = {
     sendSuccess(res, data);
   }),
 
+  getOfferDataForPdf: async (offerId: string) => {
+    return await recruitmentService.getOfferDataForPdf(offerId);
+  },
+
   // ─── Onboarding ──────────────────────────────────────────────────────
   getOnboardingChecklist: asyncHandler(async (req: Request, res: Response) => {
     const data = await recruitmentService.getOnboardingChecklist(req.params.employeeId);

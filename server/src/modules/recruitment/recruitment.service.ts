@@ -155,7 +155,13 @@ export const recruitmentService = {
   async getApplicationsByCandidate(candidateId: string) {
     return db('applications')
       .join('job_requisitions', 'applications.requisition_id', 'job_requisitions.id')
-      .select('applications.*', 'job_requisitions.title as requisition_title')
+      .leftJoin('offer_letters', 'applications.id', 'offer_letters.application_id')
+      .select(
+        'applications.*', 
+        'job_requisitions.title as requisition_title',
+        'offer_letters.id as offer_id',
+        'offer_letters.status as offer_status'
+      )
       .where('applications.candidate_id', candidateId);
   },
 
@@ -289,6 +295,33 @@ export const recruitmentService = {
       .update({ status, updated_at: db.fn.now() })
       .returning('*');
     return updated;
+  },
+
+  async getOfferDataForPdf(offerLetterId: string) {
+    const data = await db('offer_letters')
+      .join('applications', 'offer_letters.application_id', 'applications.id')
+      .join('candidates', 'applications.candidate_id', 'candidates.id')
+      .join('job_requisitions', 'applications.requisition_id', 'job_requisitions.id')
+      .join('departments', 'job_requisitions.department_id', 'departments.id')
+      .where('offer_letters.id', offerLetterId)
+      .select(
+        'offer_letters.*',
+        'candidates.first_name', 'candidates.last_name',
+        'job_requisitions.title as job_title',
+        'departments.name as department'
+      )
+      .first();
+
+    if (!data) throw new AppError(404, 'Offer letter not found');
+
+    return {
+      candidateName: `${data.first_name} ${data.last_name}`,
+      jobTitle: data.job_title,
+      department: data.department,
+      salary: Number(data.salary),
+      currency: data.currency,
+      startDate: data.start_date.toISOString(),
+    };
   },
 
   // ─── Onboarding ──────────────────────────────────────────────────────

@@ -143,7 +143,7 @@ export const learningService = {
         employee_id: enrolment.employee_id,
         course_id: enrolment.course_id,
         certificate_number: certificateNumber,
-        issue_date: db.fn.now(),
+        issued_at: db.fn.now(),
       })
       .returning('*');
     return cert;
@@ -164,6 +164,16 @@ export const learningService = {
     return cert;
   },
 
+  async getCertificateDataForPdf(id: string) {
+    const cert = await learningService.getCertificate(id);
+    return {
+      employeeName: `${cert.employee_first_name} ${cert.employee_last_name}`,
+      courseName: cert.course_title,
+      completionDate: cert.issued_at.toISOString(),
+      certificateNumber: cert.certificate_number,
+    };
+  },
+
   // ─── Learning Plans ──────────────────────────────────────────────────
   async listPlans(page = 1, limit = 20) {
     const query = db('learning_plans').orderBy('created_at', 'desc');
@@ -179,7 +189,7 @@ export const learningService = {
       .join('courses', 'learning_plan_items.course_id', 'courses.id')
       .select('learning_plan_items.*', 'courses.title as course_title')
       .where('learning_plan_items.plan_id', id)
-      .orderBy('learning_plan_items.order_idx', 'asc');
+      .orderBy('learning_plan_items.order', 'asc');
 
     return { ...plan, items };
   },
@@ -200,7 +210,7 @@ export const learningService = {
         const itemRows = data.items.map((item: any) => ({
           plan_id: plan.id,
           course_id: item.courseId,
-          order_idx: item.order,
+          order: item.order,
           is_required: item.isRequired,
         }));
         insertedItems = await trx('learning_plan_items').insert(itemRows).returning('*');
@@ -221,7 +231,7 @@ export const learningService = {
         const itemRows = items.map((item: any) => ({
           plan_id: planId,
           course_id: item.courseId,
-          order_idx: item.order,
+          order: item.order,
           is_required: item.isRequired,
         }));
         await trx('learning_plan_items').insert(itemRows);
@@ -233,12 +243,12 @@ export const learningService = {
 
   // ─── Mandatory Training ──────────────────────────────────────────────
   async listMandatoryTraining() {
-    return await db('mandatory_training_rules')
-      .join('courses', 'mandatory_training_rules.course_id', 'courses.id')
-      .leftJoin('departments', 'mandatory_training_rules.department_id', 'departments.id')
-      .leftJoin('job_titles', 'mandatory_training_rules.job_title_id', 'job_titles.id')
+    return await db('mandatory_training')
+      .join('courses', 'mandatory_training.course_id', 'courses.id')
+      .leftJoin('departments', 'mandatory_training.department_id', 'departments.id')
+      .leftJoin('job_titles', 'mandatory_training.job_title_id', 'job_titles.id')
       .select(
-        'mandatory_training_rules.*',
+        'mandatory_training.*',
         'courses.title as course_title',
         'departments.name as department_name',
         'job_titles.title as job_title_name'
@@ -246,7 +256,7 @@ export const learningService = {
   },
 
   async createMandatoryTraining(data: any) {
-    const [rule] = await db('mandatory_training_rules')
+    const [rule] = await db('mandatory_training')
       .insert({
         course_id: data.courseId,
         department_id: data.departmentId || null,
@@ -258,7 +268,7 @@ export const learningService = {
   },
 
   async deleteMandatoryTraining(id: string) {
-    const deleted = await db('mandatory_training_rules').where({ id }).del();
+    const deleted = await db('mandatory_training').where({ id }).del();
     if (!deleted) throw new AppError(404, 'Mandatory training rule not found');
   },
 
@@ -267,9 +277,9 @@ export const learningService = {
     if (!emp) throw new AppError(404, 'Employee not found');
 
     // Get rules applicable to employee (either by dept, job title, or global)
-    const rules = await db('mandatory_training_rules')
-      .join('courses', 'mandatory_training_rules.course_id', 'courses.id')
-      .select('mandatory_training_rules.*', 'courses.title as course_title')
+    const rules = await db('mandatory_training')
+      .join('courses', 'mandatory_training.course_id', 'courses.id')
+      .select('mandatory_training.*', 'courses.title as course_title')
       .where('department_id', emp.department_id)
       .orWhere('job_title_id', emp.job_title_id)
       .orWhere(function() {

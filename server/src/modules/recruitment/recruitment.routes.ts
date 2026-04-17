@@ -38,6 +38,15 @@ router.put('/interviews/:id', authenticate, authorize(ROLES.HR_MANAGER), validat
 router.post('/applications/:id/offer', authenticate, authorize(ROLES.HR_MANAGER), validate(schemas.createOfferSchema), ctrl.createOffer);
 router.put('/offers/:id/status', authenticate, authorize(ROLES.HR_MANAGER), ctrl.updateOfferStatus);
 
+import { generateOfferLetterPDF } from './offerLetter.pdf';
+router.get('/offers/:id/pdf', asyncHandler(async (req, res) => {
+  const data = await ctrl.getOfferDataForPdf(req.params.id);
+  const buffer = await generateOfferLetterPDF(data);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="offer-letter-${req.params.id}.pdf"`);
+  res.send(buffer);
+}));
+
 // Onboarding
 router.get('/onboarding/:employeeId', authenticate, ctrl.getOnboardingChecklist);
 router.patch('/onboarding/tasks/:taskId', authenticate, ctrl.updateTaskCompletion);
