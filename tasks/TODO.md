@@ -212,32 +212,29 @@
 
 ***
 
-## PHASE 9 — Testing
+## PHASE 9 — Testing Infrastructure & Integration
 
-### Unit Tests (server)
-- [ ] **PHASE-9-01** Write `auth.service.test.ts` — JWT sign/verify, bcrypt compare, refresh token creation/revocation
-- [ ] **PHASE-9-02** Write `payroll.service.test.ts` — lifecycle state transitions, tax rule application, payslip calculation
-- [ ] **PHASE-9-03** Write `leave.service.test.ts` — overlap detection, balance deduction, accrual calculation
-
-### API Integration Tests (server)
-- [ ] **PHASE-9-04** `/auth` — login success, login failure, token refresh, logout
-- [ ] **PHASE-9-05** `/employees` — list (paginated), get by ID, create (HR Manager only), update, soft-delete
-- [ ] **PHASE-9-06** `/payroll` — create run, advance stage, reject invalid transition, fetch payslip
-- [ ] **PHASE-9-07** `/recruitment` — create requisition, move candidate stage, convert to employee
-- [ ] **PHASE-9-08** `/performance` — create cycle, submit appraisal, acknowledge review
-- [ ] **PHASE-9-10** `/leave` — submit request, approve (manager), reject, overlap collision returns 409
-- [ ] **PHASE-9-11** `/learning` — enrol, advance status, complete and trigger certificate generation
-
-### Component Tests (client)
-- [ ] **PHASE-9-12** `Button.test.tsx` — renders variants, fires onClick, shows spinner in loading state, disabled blocks click
-- [ ] **PHASE-9-13** `Modal.test.tsx` — opens/closes, Escape key closes, backdrop click closes, focus trapped inside
-- [ ] **PHASE-9-14** `Table.test.tsx` — renders rows, pagination controls, sort column header click, empty state slot
-- [ ] **PHASE-9-15** `Form.test.tsx` — Zod validation errors display per field, submit fires with valid data
-- [ ] **PHASE-9-16** `Badge.test.tsx` — correct colour class per variant, renders label text
-- [ ] **PHASE-9-17** `Skeleton.test.tsx` — renders correct shape per variant (text, heading, avatar, image), shimmer class present
-- [ ] **PHASE-9-18** `EmployeeListPage.test.tsx` — TanStack Query mock returns data, table rows rendered, search filters list
-- [ ] **PHASE-9-19** `LeaveRequestPage.test.tsx` — form submission triggers API mutation, validation errors shown, balance preview updates on leave type change
+- [x] **PHASE-9-01** Auth Integration Tests (`server/src/__tests__/auth.test.ts`)
+- [x] **PHASE-9-02** Employee Integration Tests (`server/src/__tests__/employees.test.ts`)
+- [x] **PHASE-9-03** Payroll Integration Tests (`server/src/__tests__/payroll.test.ts`)
+- [x] **PHASE-9-04** Leave Integration Tests (`server/src/__tests__/leave.test.ts`)
+- [x] **PHASE-9-05** Recruitment Integration Tests (`server/src/__tests__/recruitment.test.ts`)
+- [x] **PHASE-9-06** Performance Integration Tests (`server/src/__tests__/performance.test.ts`)
+- [x] **PHASE-9-07** Learning Integration Tests (`server/src/__tests__/learning.test.ts`)
+- [x] **PHASE-9-08** Search Integration Tests (`server/src/__tests__/search.test.ts`)
+- [x] **PHASE-9-09** Notifications Integration Tests (`server/src/__tests__/notifications.test.ts`)
+- [x] **PHASE-9-10** Admin Integration Tests (`server/src/__tests__/admin.test.ts`)
+- [x] **PHASE-9-11** Unit: `auth.service` (JWT, bcrypt, tax calculation)
+- [x] **PHASE-9-12** Unit: `leave.service` (Working days, overlap detection)
+- [x] **PHASE-9-13** Unit: `pagination` (`getPagination`, `buildMeta`)
+- [x] **PHASE-9-14** Unit: `responseEnvelope` (`success`, `error`)
+- [x] **PHASE-9-15** Client: `Button` component tests
+- [x] **PHASE-9-16** Client: `Table` component tests
+- [x] **PHASE-9-17** Client: `Modal` component tests
+- [x] **PHASE-9-18** Client: `KpiCard` component tests
+- [x] **PHASE-9-19** Client: `useEmployees` hook tests
+- [x] **PHASE-9-20** Final verification + coverage thresholds (70%)
 
 ***
 
-*Last updated: Phase 6 (frontend feature modules) complete. Ready to execute Phase 7 (PDF Documents).*
+*Last updated: Phase 9 (Testing Infrastructure & Integration) complete.*

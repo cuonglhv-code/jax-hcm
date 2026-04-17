@@ -4,6 +4,7 @@ import { authenticate } from '../../middleware/authenticate';
 import { authorize } from '../../middleware/authorize';
 import { validate } from '../../middleware/validate';
 import { paginate } from '../../middleware/paginate';
+import { asyncHandler } from '../../utils/response';
 import { ROLES } from '@hcm/shared';
 import * as schemas from './recruitment.schemas';
 
@@ -38,7 +39,7 @@ router.put('/interviews/:id', authenticate, authorize(ROLES.HR_MANAGER), validat
 router.post('/applications/:id/offer', authenticate, authorize(ROLES.HR_MANAGER), validate(schemas.createOfferSchema), ctrl.createOffer);
 router.put('/offers/:id/status', authenticate, authorize(ROLES.HR_MANAGER), ctrl.updateOfferStatus);
 
-import { generateOfferLetterPDF } from './offerLetter.pdf';
+import { generateOfferLetterPDF } from './offerLetterPdf';
 router.get('/offers/:id/pdf', asyncHandler(async (req, res) => {
   const data = await ctrl.getOfferDataForPdf(req.params.id);
   const buffer = await generateOfferLetterPDF(data);

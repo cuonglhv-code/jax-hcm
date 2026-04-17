@@ -37,9 +37,9 @@ const config: { [env: string]: Knex.Config } = {
   },
   test: {
     ...base,
-    connection: {
+    connection: process.env.DATABASE_URL || {
       ...(base.connection as object),
-      database: process.env.DB_NAME_TEST ?? 'hcm_test',
+      database: process.env.DB_NAME_TEST ?? 'jax_hcm_test',
     },
   },
 }

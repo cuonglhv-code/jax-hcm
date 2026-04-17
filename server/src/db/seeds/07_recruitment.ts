@@ -41,4 +41,19 @@ export async function seed(knex: Knex): Promise<void> {
   }
 
   await knex('applications').insert(applications);
+
+  // Seed at least one onboarding checklist for tests
+  const employees = await knex('employees').select('id');
+  if (employees.length > 0) {
+    const checklistId = uuidv4();
+    await knex('onboarding_checklists').insert({
+      id: checklistId,
+      employee_id: employees[0].id
+    });
+    
+    await knex('onboarding_tasks').insert([
+      { id: uuidv4(), checklist_id: checklistId, title: 'Sign Contract', due_date: '2024-05-01' },
+      { id: uuidv4(), checklist_id: checklistId, title: 'Setup Laptop', due_date: '2024-05-01' }
+    ]);
+  }
 }

@@ -44,3 +44,5 @@ export const createDepartmentSchema = z.object({
   description: z.string().optional(),
   managerId: z.string().uuid().optional(),
 });
+
+

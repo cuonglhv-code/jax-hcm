@@ -35,6 +35,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
 export async function refresh(req: Request, res: Response, next: NextFunction) {
   try {
     const oldToken = req.cookies.refreshToken || (req.body as RefreshInput).refreshToken
+    if (!oldToken) return res.status(401).json({ success: false, error: 'Refresh token missing' })
     const payload  = await svc.verifyRefreshToken(oldToken)
     
     const accessToken = svc.signAccessToken(payload)

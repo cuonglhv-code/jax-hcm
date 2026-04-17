@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const createCycleSchema = z.object({
   name:      z.string().min(1),
-  startDate: z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/),
-  endDate:   z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  endDate:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   isActive:  z.boolean().default(false),
 });
 
@@ -29,7 +29,7 @@ export const createGoalSchema = z.object({
   title:       z.string().min(1).max(255),
   description: z.string().optional(),
   cycleId:     z.string().uuid().optional(),
-  dueDate:     z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/).optional(),
+  dueDate:     z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
 export const createKeyResultSchema = z.object({
@@ -43,3 +43,5 @@ export const createKeyResultSchema = z.object({
 export const updateKeyResultSchema = z.object({
   currentValue: z.number().nonnegative(),
 });
+
+

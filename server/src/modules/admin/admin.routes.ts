@@ -37,7 +37,7 @@ adminRouter.get('/users/:id', asyncHandler(async (req, res) => {
 }))
 
 adminRouter.put('/users/:id', validate(updateUserSchema), asyncHandler(async (req, res) => {
-  const data = await adminService.updateUser(req.params.id, req.user!.id, req.body)
+  const data = await adminService.updateUser(req.params.id, req.user!.userId, req.body)
   sendSuccess(res, data)
 }))
 
@@ -47,12 +47,18 @@ adminRouter.post('/users/:id/reset-password', validate(resetPasswordSchema), asy
 }))
 
 adminRouter.delete('/users/:id', asyncHandler(async (req, res) => {
-  await adminService.deleteUser(req.params.id, req.user!.id)
+  await adminService.deleteUser(req.params.id, req.user!.userId)
   sendSuccess(res, null)
 }))
 
 adminRouter.get('/activity-log', asyncHandler(async (req, res) => {
   const { page, limit } = getPagination(req)
-  const { data, total } = await adminService.getActivityLog(page, limit)
+  const filters = {
+    action: req.query.action as string,
+    entityType: req.query.entityType as string,
+    performedBy: req.query.performedBy as string,
+  }
+  const { data, total } = await adminService.getActivityLog(page, limit, filters)
   sendSuccess(res, data, 200, buildMeta(total, page, limit))
 }))
+

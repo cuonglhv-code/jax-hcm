@@ -18,8 +18,8 @@ export const createEntitlementSchema = z.object({
 
 export const createLeaveRequestSchema = z.object({
   leaveTypeId: z.string().uuid(),
-  startDate:   z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/),
-  endDate:     z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/),
+  startDate:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  endDate:     z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   reason:      z.string().max(500).optional(),
 }).refine(d => new Date(d.endDate) >= new Date(d.startDate), {
   message: 'endDate must be on or after startDate',
@@ -32,6 +32,8 @@ export const reviewLeaveSchema = z.object({
 });
 
 export const clockSchema = z.object({
-  date:  z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/).optional(),
+  date:  z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   notes: z.string().optional(),
 });
+
+

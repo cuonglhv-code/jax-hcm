@@ -4,7 +4,7 @@ import { authorize } from '../../middleware/authorize';
 import { validate } from '../../middleware/validate';
 import { asyncHandler, sendSuccess } from '../../utils/response';
 import { payrollService } from './payroll.service';
-import { generatePayslipPDF } from './payslip.pdf';
+import { generatePayslipPDF } from './payslipPdf';
 import { z } from 'zod';
 
 export const payrollRouter = Router();

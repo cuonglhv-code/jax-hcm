@@ -102,12 +102,22 @@ export const adminService = {
     await db('users').where({ id }).update({ deleted_at: new Date(), is_active: false })
   },
 
-  async getActivityLog(page: number, limit: number) {
+  async getActivityLog(page: number, limit: number, filters?: { action?: string; entityType?: string; performedBy?: string }) {
     const offset = (page - 1) * limit
     const query = db('audit_logs')
       .leftJoin('users', 'audit_logs.performed_by', 'users.id')
       .select('audit_logs.*', 'users.email as actor_email')
       .orderBy('audit_logs.created_at', 'desc')
+
+    if (filters?.action) {
+      query.where('audit_logs.action', filters.action)
+    }
+    if (filters?.entityType) {
+      query.where('audit_logs.entity_type', filters.entityType)
+    }
+    if (filters?.performedBy) {
+      query.where('audit_logs.performed_by', filters.performedBy)
+    }
 
     const [{ count }] = await query.clone().count('audit_logs.id as count')
     const data = await query.limit(limit).offset(offset)

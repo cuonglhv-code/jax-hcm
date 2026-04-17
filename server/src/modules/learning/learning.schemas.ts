@@ -36,3 +36,5 @@ export const createMandatoryTrainingSchema = z.object({
   departmentId:       z.string().uuid().optional(),
   renewalPeriodDays:  z.number().int().positive().optional(),
 });
+
+

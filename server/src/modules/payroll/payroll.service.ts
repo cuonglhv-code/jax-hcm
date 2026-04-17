@@ -5,11 +5,31 @@ import { getPagination, buildMeta } from '../../utils/pagination';
 import { Request } from 'express';
 import { AuthUser } from '@hcm/shared';
 
-// Simple UK tax calculation hook (configurable in future)
-function calculateTax(grossPay: number): number {
-  if (grossPay <= 12570 / 12) return 0; // Personal allowance
-  if (grossPay <= 50270 / 12) return (grossPay - 12570 / 12) * 0.2;
-  return (50270 / 12 - 12570 / 12) * 0.2 + (grossPay - 50270 / 12) * 0.4;
+export function calculateTax(annualGrossPay: number, rules: Array<{ min_income: string | number; max_income: string | number | null; rate: string | number }>): number {
+  if (!rules || rules.length === 0) return 0;
+  
+  // Sort rules by min_income ascending
+  const sorted = [...rules].map(r => ({
+    min: Number(r.min_income),
+    max: r.max_income ? Number(r.max_income) : Infinity,
+    rate: Number(r.rate)
+  })).sort((a, b) => a.min - b.min);
+
+  let totalTax = 0;
+  for (const rule of sorted) {
+    if (annualGrossPay > rule.min) {
+      const taxableAtBand = Math.min(annualGrossPay, rule.max) - rule.min;
+      totalTax += taxableAtBand * rule.rate;
+    }
+  }
+  return totalTax;
+}
+
+export function calculateTaxMonthly(monthlyGrossPay: number, rules: Array<any>): number {
+  // convert monthly to annual, calculate tax, convert back to monthly
+  const annualGross = monthlyGrossPay * 12;
+  const annualTax = calculateTax(annualGross, rules);
+  return annualTax / 12;
 }
 
 function calculateNI(grossPay: number): number {
@@ -141,6 +161,8 @@ export const payrollService = {
       .where({ status: 'active' })
       .whereNull('deleted_at');
 
+    const activeTaxRules = await db('tax_rules').whereNull('deleted_at');
+
     let totalGross = 0;
     let totalNet = 0;
 
@@ -167,7 +189,7 @@ export const payrollService = {
       }
 
       const grossWithAllowances = gross + totalAllowances;
-      const tax = calculateTax(grossWithAllowances);
+      const tax = calculateTaxMonthly(grossWithAllowances, activeTaxRules);
       const ni = calculateNI(grossWithAllowances);
       const net = grossWithAllowances - tax - ni - totalDeductions;
 
@@ -302,4 +324,3 @@ export const payrollService = {
     await db('tax_rules').where({ id }).update({ deleted_at: new Date() });
   },
 };
-

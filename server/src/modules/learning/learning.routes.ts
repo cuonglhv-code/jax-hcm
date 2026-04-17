@@ -4,6 +4,7 @@ import { authenticate } from '../../middleware/authenticate';
 import { authorize } from '../../middleware/authorize';
 import { validate } from '../../middleware/validate';
 import { paginate } from '../../middleware/paginate';
+import { asyncHandler } from '../../utils/response';
 import { ROLES } from '@hcm/shared';
 import * as schemas from './learning.schemas';
 
@@ -25,7 +26,7 @@ router.patch('/enrolments/:id/status', authenticate, validate(schemas.updateEnro
 // Certificates
 router.get('/certificates/:id', authenticate, ctrl.getCertificate);
 
-import { generateCertificatePDF, CertificateData } from './certificate.pdf';
+import { generateCertificatePDF, CertificateData } from './certificatePdf';
 router.get('/certificates/:id/pdf', asyncHandler(async (req, res) => {
   const data = await ctrl.getCertificateDataForPdf(req.params.id);
   const buffer = await generateCertificatePDF(data);
